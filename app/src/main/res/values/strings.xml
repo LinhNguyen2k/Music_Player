@@ -5,4 +5,10 @@
     <string name="playlist_btn">Playlist</string>
     <string name="total_songs">Total Songs</string>
     <string name="song_name">Song Name</string>
+    <string name="tv_start">00:00</string>
+    <string name="tv_end">Loading...</string>
+    <string name="repeat_btn">Repeat</string>
+    <string name="equalizer_btn">Equalizer</string>
+    <string name="timer_btn">Time</string>
+    <string name="share_btn">Share</string>
 </resources>
