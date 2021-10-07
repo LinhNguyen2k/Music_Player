@@ -9,6 +9,7 @@
         android:icon="@mipmap/music_player"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/music_player_round"
+        android:requestLegacyExternalStorage="true"
         android:supportsRtl="true"
         android:theme="@style/Theme.Music_Player">
         <activity

@@ -1,7 +1,9 @@
 package com.example.music_player
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.widget.Toast
@@ -16,8 +18,8 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
     private lateinit var musicAdapter: MusicAdapter
 
-    companion object{
-        lateinit var MusicList : ArrayList<Music>
+    companion object {
+        lateinit var MusicList: ArrayList<Music>
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +37,7 @@ class MainActivity : AppCompatActivity() {
         rc_list_songs.setHasFixedSize(true)
         rc_list_songs.setItemViewCacheSize(13)
         rc_list_songs.layoutManager = LinearLayoutManager(this)
-        musicAdapter = MusicAdapter(MusicList,applicationContext)
+        musicAdapter = MusicAdapter(MusicList, applicationContext)
         rc_list_songs.adapter = musicAdapter
 
         btn_shuffle.setOnClickListener {
@@ -77,30 +79,53 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    private fun getAllAudio() : ArrayList<Music>{
+
+    @SuppressLint("Range")
+    private fun getAllAudio(): ArrayList<Music> {
         val tempList = ArrayList<Music>()
         val selection = MediaStore.Audio.Media.IS_MUSIC + " != 0"
-        val projection = arrayOf(MediaStore.Audio.Media._ID, MediaStore.Audio.Media.TITLE, MediaStore.Audio.Media.ALBUM,
-            MediaStore.Audio.Media.ARTIST, MediaStore.Audio.Media.DURATION, MediaStore.Audio.Media.DATE_ADDED, MediaStore.Audio.Media.DATA)
-        val cursor = this.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI, projection, selection, null, MediaStore.Audio.Media.DATE_ADDED, null)
+        val projection = arrayOf(MediaStore.Audio.Media._ID,
+            MediaStore.Audio.Media.TITLE,
+            MediaStore.Audio.Media.ALBUM,
+            MediaStore.Audio.Media.ARTIST,
+            MediaStore.Audio.Media.DURATION,
+            MediaStore.Audio.Media.DATE_ADDED,
+            MediaStore.Audio.Media.DATA,
+            MediaStore.Audio.Media.ALBUM_ID)
+        val cursor = this.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
+            projection,
+            selection,
+            null,
+            MediaStore.Audio.Media.DATE_ADDED,
+            null)
 
-        if (cursor != null){
+        if (cursor != null) {
             if (cursor.moveToFirst())
-            do {
-                val id = cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media._ID)))
-                val title = cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)))
-                val album = cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)))
-                val artist = cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)))
-                val durationC = cursor.getLong((cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)))
-                val pathC = cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.DATA)))
+                do {
+                    val id = cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media._ID)))
+                    val title =
+                        cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)))
+                    val album =
+                        cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)))
+                    val artist =
+                        cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)))
+                    val durationC =
+                        cursor.getLong((cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)))
+                    val albumC =
+                        cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))
+                            .toString()
+                    val uri = Uri.parse("content://media/external/audio/albumart")
+                    val imgs = Uri.withAppendedPath(uri, albumC).toString()
+                    val pathC =
+                        cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.DATA)))
 
-                val music = Music(id, title, album, artist, durationC, pathC)
-                val file = File(music.path)
-                if (file.exists()){
-                    tempList.add(music)
-                }
+                    val music = Music(id, title, album, artist, durationC, pathC, img = imgs)
+                    val file = File(music.path)
+                    if (file.exists()) {
+                        tempList.add(music)
+                    }
 
-            }while (cursor.moveToNext())
+                } while (cursor.moveToNext())
             cursor.close()
         }
 
