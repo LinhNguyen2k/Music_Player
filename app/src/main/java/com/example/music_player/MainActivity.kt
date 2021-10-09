@@ -41,10 +41,13 @@ class MainActivity : AppCompatActivity() {
         rc_list_songs.adapter = musicAdapter
 
         btn_shuffle.setOnClickListener {
-            startActivity(Intent(applicationContext, Player::class.java))
+            val intent = Intent(applicationContext, Player::class.java)
+            intent.putExtra("index", 0)
+            intent.putExtra("class", "MusicAdapter")
+            startActivity(intent)
         }
         btn_favorite.setOnClickListener {
-            startActivity(Intent(applicationContext, Fravorite_Player::class.java))
+            startActivity(Intent(applicationContext, Favorite_Player::class.java))
         }
         btn_playLists.setOnClickListener {
             startActivity(Intent(applicationContext, PlayList::class.java))

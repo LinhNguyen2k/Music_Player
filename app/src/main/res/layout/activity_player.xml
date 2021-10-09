@@ -20,6 +20,7 @@
             android:orientation="horizontal">
 
             <ImageButton
+                android:id="@+id/img_back"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -45,6 +46,7 @@
         </LinearLayout>
 
         <com.google.android.material.imageview.ShapeableImageView
+            android:id="@+id/img_songs"
             android:layout_width="250dp"
             android:layout_height="220dp"
             android:layout_marginTop="20sp"
@@ -55,6 +57,7 @@
             android:layout_weight="1"/>
 
         <TextView
+            android:id="@+id/tv_songName"
             android:layout_weight="1"
             android:gravity="center"
             android:layout_width="match_parent"
@@ -73,12 +76,14 @@
             android:orientation="horizontal">
 
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/btn_nextLeft"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_baseline_chevron_left_24"
                 app:iconSize="40dp" />
 
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+               android:id="@+id/playerPause"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="30dp"
@@ -89,6 +94,7 @@
                 app:shapeAppearanceOverlay="@style/curved" />
 
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                android:id="@+id/btn_nextRight"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:icon="@drawable/ic_baseline_chevron_right_24"
