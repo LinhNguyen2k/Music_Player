@@ -6,57 +6,66 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-   <LinearLayout
-       android:layout_width="match_parent"
-       android:layout_height="match_parent"
-       android:orientation="vertical">
 
-       <TextView
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:layout_margin="10dp"
-           android:text="@string/total_songs"
-           android:textColor="@color/black"/>
-       <androidx.recyclerview.widget.RecyclerView
-           android:id="@+id/rc_list_songs"
-           android:layout_width="match_parent"
-           android:layout_height="wrap_content"
-           android:layout_margin="10dp"/>
-   </LinearLayout>
-    <LinearLayout
-        app:layout_constraintBottom_toBottomOf="parent"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="90dp"
-        android:orientation="horizontal">
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_shuffle"
-            android:layout_width="0dp"
+        android:layout_height="match_parent">
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/shuffle_btn"
-            android:textAllCaps="false"
-            android:drawableTop="@drawable/ic_baseline_shuffle_24"
-            android:contentDescription="@string/shuffle_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"/>
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_favorite"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/favorite_btn"
-            android:textAllCaps="false"
-            android:drawableTop="@drawable/ic_baseline_favorite_24"
-            android:contentDescription="@string/favorite_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"/>
-        <androidx.appcompat.widget.AppCompatButton
-            android:id="@+id/btn_playLists"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:text="@string/playlist_btn"
-            android:textAllCaps="false"
-            android:drawableTop="@drawable/ic_baseline_library_music_24"
-            android:contentDescription="@string/playlist_btn"
-            style="@style/Widget.AppCompat.Button.Borderless"/>
-    </LinearLayout>
+            android:orientation="vertical">
+            <
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rc_list_songs"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"/>
+            <!--    <LinearLayout-->
+            <!--        android:id="@+id/layout_bnt"-->
+            <!--        app:layout_constraintTop_toTopOf="parent"-->
+            <!--        android:layout_width="match_parent"-->
+            <!--        android:layout_height="90dp"-->
+            <!--        android:orientation="horizontal">-->
+            <!--        <androidx.appcompat.widget.AppCompatButton-->
+            <!--            android:id="@+id/btn_shuffle"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="match_parent"-->
+            <!--            android:layout_weight="1"-->
+            <!--            android:text="@string/shuffle_btn"-->
+            <!--            android:textAllCaps="false"-->
+            <!--            android:drawableTop="@drawable/ic_baseline_shuffle_24"-->
+            <!--            android:contentDescription="@string/shuffle_btn"-->
+            <!--            style="@style/Widget.AppCompat.Button.Borderless"/>-->
+            <!--        <androidx.appcompat.widget.AppCompatButton-->
+            <!--            android:id="@+id/btn_favorite"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="match_parent"-->
+            <!--            android:layout_weight="1"-->
+            <!--            android:text="@string/favorite_btn"-->
+            <!--            android:textAllCaps="false"-->
+            <!--            android:drawableTop="@drawable/ic_baseline_favorite_24"-->
+            <!--            android:contentDescription="@string/favorite_btn"-->
+            <!--            style="@style/Widget.AppCompat.Button.Borderless"/>-->
+            <!--        <androidx.appcompat.widget.AppCompatButton-->
+            <!--            android:id="@+id/btn_playLists"-->
+            <!--            android:layout_width="0dp"-->
+            <!--            android:layout_height="match_parent"-->
+            <!--            android:layout_weight="1"-->
+            <!--            android:text="@string/playlist_btn"-->
+            <!--            android:textAllCaps="false"-->
+            <!--            android:drawableTop="@drawable/ic_baseline_library_music_24"-->
+            <!--            android:contentDescription="@string/playlist_btn"-->
+            <!--            style="@style/Widget.AppCompat.Button.Borderless"/>-->
+            <!--    </LinearLayout>-->
+        </LinearLayout>
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fr_nowPlaying"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            tools:layout="@layout/fragment_now_playing"
+            app:layout_constraintLeft_toLeftOf="parent"
+            android:name="com.example.music_player.NowPlayingFragment"/>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

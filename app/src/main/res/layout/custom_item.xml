@@ -7,8 +7,8 @@
 
     <com.google.android.material.imageview.ShapeableImageView
         android:id="@+id/imageMV"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_marginStart="5dp"
         android:src="@mipmap/music_player"
         app:shapeAppearanceOverlay="@style/curved" />
@@ -19,7 +19,7 @@
         android:id="@+id/tv_songNameMusic"
         android:layout_toStartOf="@id/tv_songDuration"
         android:layout_width="wrap_content"
-        android:layout_height="25dp"
+        android:layout_height="30dp"
         android:text="@string/song_name"
         android:textColor="@color/black"
         android:layout_toEndOf="@id/imageMV"/>
@@ -31,14 +31,14 @@
         android:layout_toStartOf="@id/tv_songDuration"
         android:layout_below="@id/tv_songNameMusic"
         android:layout_width="wrap_content"
-        android:layout_height="25dp"
+        android:layout_height="30dp"
         android:text="@string/song_name"
         android:layout_toEndOf="@id/imageMV"/>
 
     <TextView
         android:id="@+id/tv_songDuration"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
         android:layout_alignParentEnd="true"
         android:gravity="center"
         android:text="@string/tv_start"

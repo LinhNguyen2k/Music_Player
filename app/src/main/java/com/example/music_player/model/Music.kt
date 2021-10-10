@@ -29,21 +29,27 @@ fun getImage(path: String): ByteArray? {
     return retriever.embeddedPicture
 }
 
- fun setSongPosition(check: Boolean) {
-   if (!Player.repeat){
-       if (check) {
-           if (Player.musicListPlayer.size - 1 == Player.songPosition) {
-               Player.songPosition = 0
-           } else {
-               ++Player.songPosition
-           }
-       } else {
-           if (0 == Player.songPosition) {
-               Player.songPosition = Player.musicListPlayer.size - 1
-           } else {
-               --Player.songPosition
-           }
-       }
-   }
+fun setSongPosition(check: Boolean) {
+    if (!Player.repeat && !Player.repeatAll) {
+        if (check) {
+            if (Player.musicListPlayer.size - 1 == Player.songPosition) {
+                Player.songPosition = 0
+            } else {
+                ++Player.songPosition
+            }
+        } else {
+            if (0 == Player.songPosition) {
+                Player.songPosition = Player.musicListPlayer.size - 1
+            } else {
+                --Player.songPosition
+            }
+        }
+    } else if (Player.repeatAll && !Player.repeat) {
+        if (Player.musicListPlayer.size - 1 == Player.songPosition) {
+            Player.songPosition = 0
+        } else {
+            ++Player.songPosition
+        }
+    }
 
 }

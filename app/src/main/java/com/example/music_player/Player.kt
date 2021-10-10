@@ -25,7 +25,9 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         var isPlaying: Boolean = false
         var musicService: MusicService? = null
         lateinit var binding: ActivityPlayerBinding
-        var repeat : Boolean = false
+        var repeat: Boolean = false
+        var repeatAll: Boolean = false
+        var shuffle: Boolean = false
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,9 +36,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         setContentView(binding.root)
         supportActionBar?.hide()
         initLayout()
-        val intent = Intent(this, MusicService::class.java)
-        bindService(intent, this, BIND_AUTO_CREATE)
-        startService(intent)
+
 
         playerPause.setOnClickListener {
             if (isPlaying) pauseMusic()
@@ -51,19 +51,65 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         btn_nextRight.setOnClickListener {
             nextSongMusic(true)
         }
-        btn_repeat.setOnClickListener {
-            if (!repeat){
-                repeat = true
-                btn_repeat.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
-            }else {
-                repeat = false
-                btn_repeat.setColorFilter(ContextCompat.getColor(this, R.color.pink))
+        btn_shuffle.setOnClickListener {
+            if (!shuffle) {
+                val intent = Intent(this, MusicService::class.java)
+                bindService(intent, this, BIND_AUTO_CREATE)
+                startService(intent)
+                shuffle = true
+                musicListPlayer = ArrayList()
+                musicListPlayer.addAll(MainActivity.MusicList)
+                musicListPlayer.shuffle()
+                setLayout()
+                btn_shuffle.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
+            } else {
+                val intent = Intent(this, MusicService::class.java)
+                bindService(intent, this, BIND_AUTO_CREATE)
+                startService(intent)
+                musicListPlayer = ArrayList()
+                musicListPlayer.addAll(MainActivity.MusicList)
+                shuffle = false
+                btn_shuffle.setColorFilter(ContextCompat.getColor(this, R.color.pink))
             }
+            repeat = false
+            btn_repeatOne.setColorFilter(ContextCompat.getColor(this, R.color.pink))
+
+            repeatAll = false
+            btn_repeatAll.setColorFilter(ContextCompat.getColor(this, R.color.pink))
+        }
+        btn_repeatOne.setOnClickListener {
+            if (!repeat) {
+                repeat = true
+                btn_repeatOne.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
+            } else {
+                repeat = false
+                btn_repeatOne.setColorFilter(ContextCompat.getColor(this, R.color.pink))
+            }
+            repeatAll = false
+            btn_repeatAll.setColorFilter(ContextCompat.getColor(this, R.color.pink))
+
+            shuffle = false
+            btn_shuffle.setColorFilter(ContextCompat.getColor(this, R.color.pink))
         }
 
-        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener{
+        btn_repeatAll.setOnClickListener {
+            if (!repeatAll) {
+                repeatAll = true
+                btn_repeatAll.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
+            } else {
+                repeatAll = false
+                btn_repeatAll.setColorFilter(ContextCompat.getColor(this, R.color.pink))
+            }
+            repeat = false
+            btn_repeatOne.setColorFilter(ContextCompat.getColor(this, R.color.pink))
+
+            shuffle = false
+            btn_shuffle.setColorFilter(ContextCompat.getColor(this, R.color.pink))
+        }
+
+        seekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(p0: SeekBar?, p1: Int, p2: Boolean) {
-                if (p2 ) musicService!!.mediaPlayer!!.seekTo(p1)
+                if (p2) musicService!!.mediaPlayer!!.seekTo(p1)
             }
 
             override fun onStartTrackingTouch(p0: SeekBar?) = Unit
@@ -79,8 +125,14 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             .load(musicListPlayer[songPosition].img)
             .apply(RequestOptions().placeholder(R.mipmap.music_player).centerCrop())
             .into(img_songs)
-        if (repeat){
-            btn_repeat.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
+        if (repeat) {
+            btn_repeatOne.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
+        }
+        if (shuffle) {
+            btn_shuffle.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
+        }
+        if (repeatAll) {
+            btn_repeatAll.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
         }
         tv_songName.text = musicListPlayer[songPosition].title
 
@@ -94,12 +146,13 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             musicService!!.mediaPlayer!!.prepare()
             musicService!!.mediaPlayer!!.start()
             isPlaying = true
-            tv_startTime.text = formatDuration(musicService!!.mediaPlayer!!.currentPosition.toLong())
+            tv_startTime.text =
+                formatDuration(musicService!!.mediaPlayer!!.currentPosition.toLong())
             tv_endTime.text = formatDuration(musicService!!.mediaPlayer!!.duration.toLong())
             seekBar.progress = 0
             seekBar.max = musicService!!.mediaPlayer!!.duration
             playerPause.setIconResource(R.drawable.ic_baseline_pause_24)
-            musicService!!.mediaPlayer!!.setOnCompletionListener (this)
+            musicService!!.mediaPlayer!!.setOnCompletionListener(this)
 
         } catch (e: Exception) {
             return
@@ -110,12 +163,27 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         songPosition = intent.getIntExtra("index", 0)
         when (intent.getStringExtra("class")) {
             "MusicAdapter" -> {
+                val intent = Intent(this, MusicService::class.java)
+                bindService(intent, this, BIND_AUTO_CREATE)
+                startService(intent)
                 musicListPlayer = ArrayList()
                 musicListPlayer.addAll(MainActivity.MusicList)
                 setLayout()
 
             }
+            "NowPlaying" -> {
+                setLayout()
+                binding.tvStartTime.text =
+                    formatDuration(musicService!!.mediaPlayer!!.currentPosition.toLong())
+                binding.tvEndTime.text =
+                    formatDuration(musicService!!.mediaPlayer!!.duration.toLong())
+                binding.seekBar.progress = musicService!!.mediaPlayer!!.currentPosition
+                binding.seekBar.max = musicService!!.mediaPlayer!!.duration
+            }
             "MainActivity" -> {
+                val intent = Intent(this, MusicService::class.java)
+                bindService(intent, this, BIND_AUTO_CREATE)
+                startService(intent)
                 musicListPlayer = ArrayList()
                 musicListPlayer.addAll(MainActivity.MusicList)
                 musicListPlayer.shuffle()
@@ -144,13 +212,15 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             setSongPosition(check = true)
             setLayout()
             createMusicPlayer()
+            musicService!!.showNotification(R.drawable.ic_baseline_pause_24)
+
         } else {
             setSongPosition(check = false)
             setLayout()
             createMusicPlayer()
+            musicService!!.showNotification(R.drawable.ic_baseline_pause_24)
         }
     }
-
 
 
     override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
@@ -170,7 +240,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         createMusicPlayer()
         try {
             setLayout()
-        }catch (e : Exception){
+        } catch (e: Exception) {
             return
         }
     }

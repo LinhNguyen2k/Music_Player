@@ -1,7 +1,6 @@
 package com.example.music_player
 
 import android.annotation.SuppressLint
-import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
@@ -40,18 +39,18 @@ class MainActivity : AppCompatActivity() {
         musicAdapter = MusicAdapter(MusicList, applicationContext)
         rc_list_songs.adapter = musicAdapter
 
-        btn_shuffle.setOnClickListener {
-            val intent = Intent(applicationContext, Player::class.java)
-            intent.putExtra("index", 0)
-            intent.putExtra("class", "MusicAdapter")
-            startActivity(intent)
-        }
-        btn_favorite.setOnClickListener {
-            startActivity(Intent(applicationContext, Favorite_Player::class.java))
-        }
-        btn_playLists.setOnClickListener {
-            startActivity(Intent(applicationContext, PlayList::class.java))
-        }
+//        btn_shuffle.setOnClickListener {
+//            val intent = Intent(applicationContext, Player::class.java)
+//            intent.putExtra("index", 0)
+//            intent.putExtra("class", "MainActivity")
+//            startActivity(intent)
+//        }
+//        btn_favorite.setOnClickListener {
+//            startActivity(Intent(applicationContext, Favorite_Player::class.java))
+//        }
+//        btn_playLists.setOnClickListener {
+//            startActivity(Intent(applicationContext, PlayList::class.java))
+//        }
     }
 
     private fun requestRunTimePermission() {

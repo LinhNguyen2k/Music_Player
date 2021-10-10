@@ -32,7 +32,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="4"
                 android:gravity="center"
-                android:text="World Of Music"
                 android:textColor="@color/black"
                 android:textSize="20sp"
                 android:textStyle="bold" />
@@ -83,7 +82,7 @@
                 app:iconSize="40dp" />
 
             <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-               android:id="@+id/playerPause"
+                android:id="@+id/playerPause"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="30dp"
@@ -141,7 +140,7 @@
             android:orientation="horizontal">
 
             <ImageButton
-                android:id="@+id/btn_repeat"
+                android:id="@+id/btn_repeatAll"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -149,25 +148,21 @@
                 android:src="@drawable/ic_baseline_repeat_24" />
 
             <ImageButton
+                android:id="@+id/btn_repeatOne"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:src="@drawable/ic_baseline_graphic_eq_24" />
+                android:src="@drawable/ic_baseline_repeat_one_24" />
 
             <ImageButton
+                android:id="@+id/btn_shuffle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
-                android:src="@drawable/ic_baseline_timer_24" />
+                android:src="@drawable/ic_baseline_shuffle_24" />
 
-            <ImageButton
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_baseline_share_24" />
         </LinearLayout>
     </LinearLayout>
 
