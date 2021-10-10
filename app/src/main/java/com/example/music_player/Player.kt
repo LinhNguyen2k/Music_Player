@@ -169,7 +169,6 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                 musicListPlayer = ArrayList()
                 musicListPlayer.addAll(MainActivity.MusicList)
                 setLayout()
-
             }
             "NowPlaying" -> {
                 setLayout()
@@ -180,16 +179,16 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                 binding.seekBar.progress = musicService!!.mediaPlayer!!.currentPosition
                 binding.seekBar.max = musicService!!.mediaPlayer!!.duration
             }
-            "MainActivity" -> {
-                val intent = Intent(this, MusicService::class.java)
-                bindService(intent, this, BIND_AUTO_CREATE)
-                startService(intent)
-                musicListPlayer = ArrayList()
-                musicListPlayer.addAll(MainActivity.MusicList)
-                musicListPlayer.shuffle()
-                setLayout()
-                createMusicPlayer()
-            }
+//            "MainActivity" -> {
+//                val intent = Intent(this, MusicService::class.java)
+//                bindService(intent, this, BIND_AUTO_CREATE)
+//                startService(intent)
+//                musicListPlayer = ArrayList()
+//                musicListPlayer.addAll(MainActivity.MusicList)
+//                musicListPlayer.shuffle()
+//                setLayout()
+//                createMusicPlayer()
+//            }
         }
     }
 

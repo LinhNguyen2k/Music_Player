@@ -14,7 +14,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <
+            <TextView
+                android:layout_margin="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Danh Sách Phát"
+                android:textSize="20dp"
+                android:textColor="#009688"/>
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rc_list_songs"
                 android:layout_width="match_parent"

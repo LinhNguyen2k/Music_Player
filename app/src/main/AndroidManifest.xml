@@ -15,16 +15,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Music_Player">
         <activity
-            android:name=".PlayList"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
-            android:name=".Favorite_Player"
-            android:exported="true"
-            android:screenOrientation="portrait"
-            tools:ignore="LockedOrientationActivity" />
-        <activity
             android:name=".Player"
             android:exported="true"
             android:screenOrientation="portrait"
