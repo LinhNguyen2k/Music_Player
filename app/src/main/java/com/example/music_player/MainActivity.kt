@@ -151,16 +151,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+
         val editor = getSharedPreferences("FAVORITE", MODE_PRIVATE).edit()
         val jsonString = GsonBuilder().create().toJson(FavoriteActivity.favoriteList)
         editor.putString("FavoriteSongs",jsonString)
         editor.apply()
 
-//        val editor2 = getSharedPreferences("SONGDOWNLOAD", MODE_PRIVATE).edit()
-//        val jsonString2 = GsonBuilder().create().toJson(OfflineActivity.MusicList )
-//        editor2.putString("DownloadSongs",jsonString2)
-//        editor2.apply()
     }
-
 }
 

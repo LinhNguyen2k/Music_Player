@@ -38,19 +38,8 @@ class NowPlayingFragment : Fragment() {
         binding.btnNextSongs.setOnClickListener {
             setSongPosition(check = true)
             Player.musicService!!.createMusicPlayer()
-            if(!Player.isChekOnline) {
-                val imageArt = getImage(Player.musicListOffLine[Player.songPosition].path)
-                if (imageArt != null) {
-                    BitmapFactory.decodeByteArray(imageArt, 0, imageArt.size)
-                    binding.tvSongNameFragment.text = Player.musicListOffLine[Player.songPosition].title
-                    binding.tvSongTileFragment.text =
-                        Player.musicListOffLine[Player.songPosition].artist
-                }
-                Player.binding.imgSongs.setImageBitmap(BitmapFactory.decodeByteArray(imageArt,
-                    0,
-                    imageArt!!.size))
-            }
-            if (Player.isChekOnline ) {
+
+            if (Player.musicListPlayer[Player.songPosition].isCheck ) {
                 Player.musicService!!.setLayoutTopList()
                 Glide.with(this)
                     .load(Player.musicListPlayer[Player.songPosition].thumbnail)
@@ -58,6 +47,17 @@ class NowPlayingFragment : Fragment() {
                     .into(binding.imgSong)
                 binding.tvSongNameFragment.text = Player.musicListPlayer[Player.songPosition].title
                 binding.tvSongTileFragment.text = Player.musicListPlayer[Player.songPosition].artists_names
+            } else {
+                    val imageArt = getImage(Player.musicListOffLine[Player.songPosition].path)
+                    if (imageArt != null) {
+                        BitmapFactory.decodeByteArray(imageArt, 0, imageArt.size)
+                        binding.tvSongNameFragment.text = Player.musicListOffLine[Player.songPosition].title
+                        binding.tvSongTileFragment.text =
+                            Player.musicListOffLine[Player.songPosition].artist
+                    }
+                    Player.binding.imgSongs.setImageBitmap(BitmapFactory.decodeByteArray(imageArt,
+                        0,
+                        imageArt!!.size))
             }
 
             Player.musicService!!.showNotification(R.drawable.ic_baseline_pause_24)
@@ -81,7 +81,7 @@ class NowPlayingFragment : Fragment() {
         if (Player.musicService != null) {
             binding.root.visibility = View.VISIBLE
             binding.tvSongNameFragment.isSelected = true
-            if (Player.isChekOnline) {
+            if (Player.isChekOnline && Player.musicListPlayer[Player.songPosition].isCheck) {
                 Player.musicService!!.setLayoutTopList()
                 Glide.with(this)
                     .load(Player.musicListPlayer[Player.songPosition].thumbnail)

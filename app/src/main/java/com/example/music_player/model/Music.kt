@@ -13,7 +13,7 @@ data class Music(
     val duration: Long = 0,
     val path: String,
     val artUri: String,
-    val isCheck : Boolean
+    val isCheck: Boolean,
 )
 
 fun formatDurations(duration: Long): String {
@@ -38,7 +38,13 @@ fun setSongPosition(check: Boolean) {
                 if (Player.musicListPlayer.size - 1 == Player.songPosition) {
                     Player.songPosition = 0
                 } else {
-                    ++Player.songPosition
+                    if (!Player.musicListPlayer[Player.songPosition].isCheck) {
+                        while (!Player.musicListPlayer[Player.songPosition].isCheck) {
+                            ++Player.songPosition
+                        }
+                    } else {
+                        ++Player.songPosition
+                    }
                 }
             } else {
                 if (OfflineActivity.MusicList.size - 1 == Player.songPosition) {
@@ -54,7 +60,13 @@ fun setSongPosition(check: Boolean) {
                 if (0 == Player.songPosition) {
                     Player.songPosition = Player.musicListPlayer.size - 1
                 } else {
-                    --Player.songPosition
+                    if (!Player.musicListPlayer[Player.songPosition].isCheck) {
+                        while (!Player.musicListPlayer[Player.songPosition].isCheck) {
+                            --Player.songPosition
+                        }
+                    } else {
+                        --Player.songPosition
+                    }
                 }
             } else {
                 if (0 == Player.songPosition) {
@@ -71,7 +83,13 @@ fun setSongPosition(check: Boolean) {
             if (Player.musicListPlayer.size - 1 == Player.songPosition) {
                 Player.songPosition = 0
             } else {
-                ++Player.songPosition
+                if (!Player.musicListPlayer[Player.songPosition].isCheck) {
+                    while (!Player.musicListPlayer[Player.songPosition].isCheck) {
+                        ++Player.songPosition
+                    }
+                } else {
+                    ++Player.songPosition
+                }
             }
         } else {
             if (OfflineActivity.MusicList.size - 1 == Player.songPosition) {

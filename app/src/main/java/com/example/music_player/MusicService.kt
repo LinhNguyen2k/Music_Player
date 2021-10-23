@@ -86,7 +86,7 @@ class MusicService : Service() {
                 }
             }
         }
-        if (Player.isChekOnline){
+        if (Player.isChekOnline && Player.musicListPlayer[Player.songPosition].isCheck){
             GlobalScope.launch(Dispatchers.Main) {
                 var bitmap = getBitmapFromURL(Player.musicListPlayer[Player.songPosition].thumbnail)
                 val exitIntent =
@@ -113,7 +113,8 @@ class MusicService : Service() {
 
                 startForeground(13, notification)
             }
-        } else {
+        }
+        else if (!Player.musicListOffLine[Player.songPosition].isCheck){
 
             val imageArt = getImage(Player.musicListOffLine[Player.songPosition].path)
             val image = if (imageArt != null){
@@ -148,7 +149,7 @@ class MusicService : Service() {
     }
 
     fun setLayoutTopList() {
-        if (Player.isChekOnline) {
+        if (Player.isChekOnline && Player.musicListPlayer[Player.songPosition].isCheck) {
             ApiMusicInfo.apiMusicInfo.callAPI(Player.musicListPlayer[Player.songPosition].type,
                 Player.musicListPlayer[Player.songPosition].id)
                 .enqueue(object : retrofit2.Callback<MusicInfo> {
@@ -180,7 +181,7 @@ class MusicService : Service() {
             if (Player.musicService!!.mediaPlayer == null) Player.musicService!!.mediaPlayer =
                 MediaPlayer()
             Player.musicService!!.mediaPlayer!!.reset()
-            if (Player.isChekOnline && Player.musicListPlayer[Player.songPosition].isCheck) {
+            if (  Player.isChekOnline) {
                 Player.musicService!!.mediaPlayer!!.setDataSource("http://api.mp3.zing.vn/api/streaming/audio/${Player.musicListPlayer[Player.songPosition].id}/320")
             } else {
                 Player.musicService!!.mediaPlayer!!.setDataSource(Player.musicListOffLine[Player.songPosition].path)

@@ -19,9 +19,7 @@ import com.bumptech.glide.request.RequestOptions
 import com.example.music_player.JsonInfo.MusicInfo
 import com.example.music_player.api.ApiMusicInfo
 import com.example.music_player.databinding.ActivityPlayerBinding
-import com.example.music_player.json.Song
-import com.example.music_player.json.downloadCheck
-import com.example.music_player.json.favoriteCheck
+import com.example.music_player.json.*
 import com.example.music_player.model.Music
 import com.example.music_player.model.formatDurations
 import com.example.music_player.model.getImage
@@ -68,7 +66,6 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             else playMusic()
         }
         img_back.setOnClickListener {
-            startActivity(Intent(applicationContext,MainActivity::class.java))
             finish()
         }
         btn_nextLeft.setOnClickListener {
@@ -171,7 +168,8 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             tv_songName.text = musicListOffLine[songPosition].artist
             tv_titleSong.text = musicListOffLine[songPosition].title
         }
-        if (isChekOnline) {
+
+        if (isChekOnline && musicListPlayer[songPosition].isCheck) {
             setLayoutTopList()
             favoriteIndex = favoriteCheck(musicListPlayer[songPosition].id)
             downloadIndex = downloadCheck(musicListPlayer[songPosition].id)
@@ -227,39 +225,40 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                             if (isChekOnline && musicListPlayer[songPosition].isCheck) {
                                 FavoriteActivity.favoriteList.add(musicListPlayer[songPosition])
                             } else {
-                                Toast.makeText(applicationContext,"Bài hát đã có trong máy",Toast.LENGTH_LONG).show()
+//                                Toast.makeText(applicationContext,"Bài hát đã có trong máy",Toast.LENGTH_LONG).show()
                                 isFavorite = false
-//                                val name = OfflineActivity.MusicList[songPosition].title
-//                                val id = OfflineActivity.MusicList[songPosition].id
-//                                val artist = OfflineActivity.MusicList[songPosition].artist
-//                                val duration = OfflineActivity.MusicList[songPosition].duration
-//                                val img = OfflineActivity.MusicList[songPosition].path
-//
-//                                FavoriteActivity.favoriteList.add(Song(Album(),
-//                                    Artist(),
-//                                    emptyList(),
-//                                    artist,
-//                                    "",
-//                                    -1,
-//                                    duration,
-//                                    id,
-//                                    false,
-//                                    false,
-//                                    "",
-//                                    "",
-//                                    "",
-//                                    "",
-//                                    "",
-//                                    "",
-//                                    "",
-//                                    -1,
-//                                    "",
-//                                    "",
-//                                    img,
-//                                    name,
-//                                    -1,
-//                                    "",
-//                                    false))
+                                val name = OfflineActivity.MusicList[songPosition].title
+                                val id = OfflineActivity.MusicList[songPosition].id
+                                val artist = OfflineActivity.MusicList[songPosition].artist
+                                val duration = OfflineActivity.MusicList[songPosition].duration
+                                val path = OfflineActivity.MusicList[songPosition].path
+                                val img = OfflineActivity.MusicList[songPosition].artUri
+
+                                FavoriteActivity.favoriteList.add(Song(Album(),
+                                    Artist(),
+                                    emptyList(),
+                                    artist,
+                                    "",
+                                    -1,
+                                    duration,
+                                    id,
+                                    false,
+                                    false,
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    "",
+                                    -1,
+                                    "",
+                                    path,
+                                    img,
+                                    name,
+                                    -1,
+                                    "",
+                                    false))
                             }
 
                         }
@@ -347,9 +346,9 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         try {
             if (musicService!!.mediaPlayer == null) musicService!!.mediaPlayer = MediaPlayer()
             musicService!!.mediaPlayer!!.reset()
-            if (isChekOnline && musicListPlayer[songPosition].isCheck) {
+            if (isChekOnline) {
                 musicService!!.mediaPlayer!!.setDataSource("http://api.mp3.zing.vn/api/streaming/audio/${musicListPlayer[songPosition].id}/320")
-            } else {
+            } else if (!isChekOnline){
                 musicService!!.mediaPlayer!!.setDataSource(musicListOffLine[songPosition].path)
             }
             musicService!!.mediaPlayer!!.prepare()
@@ -423,10 +422,17 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             "MusicFavoriteAdapter" -> {
                 val intent = Intent(this, MusicService::class.java)
                 bindService(intent, this, BIND_AUTO_CREATE)
-                musicListPlayer = ArrayList()
-                musicListPlayer.addAll((FavoriteActivity.favoriteList))
+                startService(intent)
+                if (FavoriteActivity.favoriteList[songPosition].isCheck){
+                    musicListPlayer = ArrayList()
+                    musicListPlayer.addAll((FavoriteActivity.favoriteList))
+                    setLayout()
+                }else {
+                    musicListOffLine = ArrayList()
+                    musicListOffLine.addAll(OfflineActivity.MusicList)
+                    setLayout()
+                }
 
-                setLayout()
             }
         }
     }

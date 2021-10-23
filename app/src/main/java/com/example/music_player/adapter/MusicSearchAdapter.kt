@@ -69,7 +69,6 @@ class MusicSearchAdapter(
                     Artist(), emptyList(),name,"",-1, duration.toLong(),id,false,false,"",
                     "","","","","","",-1,"","",img,title,-1,"",true))
             }
-//            Player.musicListSearch.add(song)
             intent.putExtra("id", listMusic[position].id)
             intent.putExtra("index", position)
             intent.putExtra("class", "MusicSearchAdapter")

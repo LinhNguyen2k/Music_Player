@@ -6,7 +6,6 @@ import android.content.Intent
 import android.graphics.BitmapFactory
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.example.music_player.Player.Companion.musicListPlayer
 import com.example.music_player.model.getImage
 import com.example.music_player.model.setSongPosition
 import kotlin.system.exitProcess
@@ -49,8 +48,8 @@ class NotificationReceiver : BroadcastReceiver() {
         setSongPosition( check= increment)
         Player.musicService!!.createMusicPlayer()
         Player.musicService!!.setLayoutTopList()
-        if (Player.isChekOnline ){
-            val linkImg  = musicListPlayer[Player.songPosition].thumbnail.removeRange(34,48)
+        if (Player.isChekOnline && Player.musicListPlayer[Player.songPosition].isCheck ){
+            val linkImg  = Player.musicListPlayer[Player.songPosition].thumbnail.removeRange(34,48)
             Glide.with(context)
                 .load(linkImg)
                 .apply(RequestOptions().placeholder(R.mipmap.music_player).centerCrop())
@@ -59,9 +58,9 @@ class NotificationReceiver : BroadcastReceiver() {
                 .load(linkImg)
                 .apply(RequestOptions().placeholder(R.mipmap.music_player).centerCrop())
                 .into(NowPlayingFragment.binding.imgSong)
-            NowPlayingFragment.binding.tvSongNameFragment.text = musicListPlayer[Player.songPosition].title
-            Player.binding.tvSongName.text = musicListPlayer[Player.songPosition].title
-            Player.binding.tvTitleSong.text = musicListPlayer[Player.songPosition].artists_names
+            NowPlayingFragment.binding.tvSongNameFragment.text = Player.musicListPlayer[Player.songPosition].title
+            Player.binding.tvSongName.text = Player.musicListPlayer[Player.songPosition].title
+            Player.binding.tvTitleSong.text = Player.musicListPlayer[Player.songPosition].artists_names
             playMusic()
         } else {
             val imageArt = getImage(Player.musicListOffLine[Player.songPosition].path)
