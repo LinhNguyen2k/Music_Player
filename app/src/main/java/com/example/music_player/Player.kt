@@ -4,14 +4,18 @@ import android.app.DownloadManager
 import android.content.*
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
+import android.util.Log
 import android.widget.PopupMenu
 import android.widget.SeekBar
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
@@ -35,6 +39,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
     companion object {
         var musicListPlayer = ArrayList<Song>()
         var musicListSearch = ArrayList<Song>()
+        var listPhu = ArrayList<Song>()
         var musicListOffLine = ArrayList<Music>()
         var songPosition = 0
         var isPlaying: Boolean = false
@@ -43,18 +48,15 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         var repeat: Boolean = false
         var repeatAll: Boolean = false
         var shuffle: Boolean = false
-        var idSongs: String = "ZW8I7AAI"
-        var typeSongs: String = "audio"
         var isFavorite: Boolean = false
         var favoriteIndex: Int = -1
-        var favoriteIndexOffline: Int = -1
         var downloadIndex: Int = -1
         var isChekOnline: Boolean = false
         var isDownload: Boolean = false
-        var isCheckDownload: Boolean = true
         var idDownload = 0L
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityPlayerBinding.inflate(layoutInflater)
@@ -80,6 +82,10 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             intent.putExtra("idSongs", musicListPlayer[songPosition].id)
             intent.putExtra("typeSongs", musicListPlayer[songPosition].type)
             ContextCompat.startActivity(applicationContext, intent, null)
+        }
+        if (!isOnline(applicationContext)){
+            btn_play.isEnabled = false
+            btn_play.alpha = 0.4f
         }
         btn_shuffle.setOnClickListener {
             if (!shuffle) {
@@ -169,33 +175,32 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             tv_titleSong.text = musicListOffLine[songPosition].title
         }
 
-        if (isChekOnline && musicListPlayer[songPosition].isCheck) {
-            setLayoutTopList()
-            favoriteIndex = favoriteCheck(musicListPlayer[songPosition].id)
-            downloadIndex = downloadCheck(musicListPlayer[songPosition].id)
-            val linkImg = musicListPlayer[songPosition].thumbnail.removeRange(34, 48)
-            Picasso.with(this).load(linkImg).into(binding.imgSongs)
-            if (repeat) {
-                btn_repeatOne.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
-            }
-            if (shuffle) {
-                btn_shuffle.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
-            }
-            if (repeatAll) {
-                btn_repeatAll.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
-            }
-            tv_songName.text = musicListPlayer[songPosition].artists_names
-            tv_titleSong.text = musicListPlayer[songPosition].title
-            when (intent.getStringExtra("class")) {
-                "MusicAdapter" -> {
-                    setLayoutTopList()
+            if (isChekOnline && musicListPlayer[songPosition].isCheck) {
+                setLayoutTopList()
+                favoriteIndex = favoriteCheck(musicListPlayer[songPosition].id)
+                downloadIndex = downloadCheck(musicListPlayer[songPosition].id)
+                val linkImg = musicListPlayer[songPosition].thumbnail.removeRange(34, 48)
+                Picasso.with(this).load(linkImg).into(binding.imgSongs)
+                if (repeat) {
+                    btn_repeatOne.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
                 }
-                "MusicListAdapter" -> {
-                    setLayoutTopList()
+                if (shuffle) {
+                    btn_shuffle.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
+                }
+                if (repeatAll) {
+                    btn_repeatAll.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
+                }
+                tv_songName.text = musicListPlayer[songPosition].artists_names
+                tv_titleSong.text = musicListPlayer[songPosition].title
+                when (intent.getStringExtra("class")) {
+                    "MusicAdapter" -> {
+                        setLayoutTopList()
+                    }
+                    "MusicListAdapter" -> {
+                        setLayoutTopList()
+                    }
                 }
             }
-        }
-
 
     }
 
@@ -221,11 +226,11 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                             isFavorite = false
                                 FavoriteActivity.favoriteList.removeAt(favoriteIndex)
                         } else {
-                            isFavorite = true
+
                             if (isChekOnline && musicListPlayer[songPosition].isCheck) {
-                                FavoriteActivity.favoriteList.add(musicListPlayer[songPosition])
+                                isFavorite = true
+                                FavoriteActivity.favoriteList.add(0,musicListPlayer[songPosition])
                             } else {
-//                                Toast.makeText(applicationContext,"Bài hát đã có trong máy",Toast.LENGTH_LONG).show()
                                 isFavorite = false
                                 val name = OfflineActivity.MusicList[songPosition].title
                                 val id = OfflineActivity.MusicList[songPosition].id
@@ -234,7 +239,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                                 val path = OfflineActivity.MusicList[songPosition].path
                                 val img = OfflineActivity.MusicList[songPosition].artUri
 
-                                FavoriteActivity.favoriteList.add(Song(Album(),
+                                FavoriteActivity.favoriteList.add(FavoriteActivity.favoriteList.size,Song(Album(),
                                     Artist(),
                                     emptyList(),
                                     artist,
@@ -377,6 +382,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                 musicListPlayer = ArrayList()
                 musicListPlayer.addAll(MainActivity.MusicList)
                 setLayout()
+
             }
             "NowPlaying" -> {
                 setLayout()
@@ -425,7 +431,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                 startService(intent)
                 if (FavoriteActivity.favoriteList[songPosition].isCheck){
                     musicListPlayer = ArrayList()
-                    musicListPlayer.addAll((FavoriteActivity.favoriteList))
+                    musicListPlayer.addAll((listPhu))
                     setLayout()
                 }else {
                     musicListOffLine = ArrayList()
@@ -450,7 +456,6 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         isPlaying = false
         musicService!!.mediaPlayer!!.pause()
     }
-
     private fun nextSongMusic(check: Boolean) {
         if (check) {
             setSongPosition(check = true)
@@ -509,6 +514,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         musicService = null
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCompletion(p0: MediaPlayer?) {
         setSongPosition(check = true)
         createMusicPlayer()
@@ -538,6 +544,28 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
 
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun isOnline(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (connectivityManager != null) {
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_CELLULAR")
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_WIFI")
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                    Log.i("Internet", "NetworkCapabilities.TRANSPORT_ETHERNET")
+                    return true
+                }
+            }
+        }
+        return false
+    }
 
 }
 

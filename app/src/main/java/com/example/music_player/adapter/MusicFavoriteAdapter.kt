@@ -4,11 +4,15 @@ import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import android.graphics.BitmapFactory
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.music_player.FavoriteActivity
@@ -37,6 +41,7 @@ class MusicFavoriteAdapter(private var listMusic : ArrayList<Song>, private val 
         return ViewHolder(view)
     }
 
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = listMusic[position]
         if ( listMusic[position].isCheck){
@@ -63,16 +68,29 @@ class MusicFavoriteAdapter(private var listMusic : ArrayList<Song>, private val 
 //            .apply(RequestOptions().placeholder(R.mipmap.music_player).centerCrop())
 //            .into(holder.img)
 
+        if (!isOnline(context)){
+            if (listMusic[position].isCheck){
+                holder.itemView.visibility = View.GONE
+                holder.itemView.layoutParams = RecyclerView.LayoutParams(0, 0)
+            }
+        }
 
         holder.itemView.setOnClickListener {
 
             if (listMusic[position].isCheck){
+
                 Player.isChekOnline = true
                 val intent  = Intent(context, Player::class.java).addFlags(FLAG_ACTIVITY_NEW_TASK)
                 intent.putExtra("idSongs", listMusic[position].id)
                 intent.putExtra("typeSongs", listMusic[position].type)
                 intent.putExtra("index", position)
                 intent.putExtra("class", "MusicFavoriteAdapter")
+                Player.listPhu.clear()
+                    for (i in 0 until FavoriteActivity.favoriteList.size - 1) {
+                        if (listMusic[i].isCheck) {
+                            Player.listPhu.add(listMusic[i])
+                        }
+                    }
                 ContextCompat.startActivity(context, intent, null)
             }else {
                 Player.isChekOnline = false
@@ -102,5 +120,23 @@ class MusicFavoriteAdapter(private var listMusic : ArrayList<Song>, private val 
     override fun getItemCount(): Int {
         return listMusic.size
     }
-
+    @RequiresApi(Build.VERSION_CODES.M)
+    fun isOnline(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (connectivityManager != null) {
+            val capabilities =
+                connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
+            if (capabilities != null) {
+                if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR)) {
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_WIFI)) {
+                    return true
+                } else if (capabilities.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET)) {
+                    return true
+                }
+            }
+        }
+        return false
+    }
 }

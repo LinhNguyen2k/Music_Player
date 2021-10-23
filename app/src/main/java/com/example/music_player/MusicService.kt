@@ -86,7 +86,7 @@ class MusicService : Service() {
                 }
             }
         }
-        if (Player.isChekOnline && Player.musicListPlayer[Player.songPosition].isCheck){
+        if (Player.isChekOnline){
             GlobalScope.launch(Dispatchers.Main) {
                 var bitmap = getBitmapFromURL(Player.musicListPlayer[Player.songPosition].thumbnail)
                 val exitIntent =
@@ -114,7 +114,7 @@ class MusicService : Service() {
                 startForeground(13, notification)
             }
         }
-        else if (!Player.musicListOffLine[Player.songPosition].isCheck){
+        else if (!Player.isChekOnline){
 
             val imageArt = getImage(Player.musicListOffLine[Player.songPosition].path)
             val image = if (imageArt != null){

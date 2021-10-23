@@ -18,7 +18,7 @@ class PlayList : AppCompatActivity() {
     companion object{
         var MusicListPlay  = ArrayList<Song>()
         var idSongs : String = "ZW67OIA0"
-        var typeSongs : String = "ZW67OIA0"
+        var typeSongs : String = "audio"
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

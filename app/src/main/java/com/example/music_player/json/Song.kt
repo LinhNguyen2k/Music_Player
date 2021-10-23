@@ -53,17 +53,16 @@ fun favoriteCheck(id : String) : Int{
     }
     return -1
 }
-//fun favoriteCheckOffline(id : String) : Int{
-//    Player.isFavorite = false
-//    OfflineActivity.MusicList.forEachIndexed { index, music ->
-//        if (id == music.id) {
-//            Player.isFavorite = true
-//            return index
-//        }
-//    }
-//    return -1
-//
-//}
+fun favoriteCheckOffline(name : String) {
+    Player.isFavorite = false
+    for (i in 0 until FavoriteActivity.favoriteList.size - 1){
+        if (name.contains(Player.musicListOffLine[Player.songPosition].title))
+        {
+            Player.isFavorite = true
+        }
+    }
+
+}
 fun downloadCheck(id : String) : Int{
     Player.isDownload = false
     OfflineActivity.MusicList.forEachIndexed { index, music ->
