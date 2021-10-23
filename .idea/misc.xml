@@ -3,18 +3,31 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/custom_bg.xml" value="0.290625" />
         <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/custom_icon_music.xml" value="0.290625" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/custom_layout_list_notes.xml" value="0.290625" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_arrow_back_24.xml" value="0.290625" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_chevron_left_24.xml" value="0.290625" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_chevron_right_24.xml" value="0.290625" />
         <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_favorite_24.xml" value="0.290625" />
         <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_library_music_24.xml" value="0.290625" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_more_vert_24.xml" value="0.290625" />
         <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_pause_24.xml" value="0.290625" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_people_alt_24.xml" value="0.290625" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_playlist_play_24.xml" value="0.290625" />
         <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_repeat_24.xml" value="0.290625" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_repeat_one_24.xml" value="0.290625" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_search_24.xml" value="0.290625" />
         <entry key="..\:/Code/Training/Music_Player/app/src/main/res/drawable/ic_baseline_shuffle_24.xml" value="0.290625" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/layout/activity_favorite.xml" value="0.4" />
         <entry key="..\:/Code/Training/Music_Player/app/src/main/res/layout/activity_fravorite_player.xml" value="0.26268115942028986" />
-        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/layout/activity_main.xml" value="0.2" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/layout/activity_main.xml" value="0.176" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/layout/activity_offline.xml" value="0.2128623188405797" />
         <entry key="..\:/Code/Training/Music_Player/app/src/main/res/layout/activity_play_list.xml" value="0.2604166666666667" />
-        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/layout/activity_player.xml" value="0.27447916666666666" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/layout/activity_player.xml" value="0.2" />
         <entry key="..\:/Code/Training/Music_Player/app/src/main/res/layout/custom_item.xml" value="0.264" />
         <entry key="..\:/Code/Training/Music_Player/app/src/main/res/layout/fragment_now_playing.xml" value="0.22146739130434784" />
+        <entry key="..\:/Code/Training/Music_Player/app/src/main/res/menu/menu.xml" value="0.27447916666666666" />
       </map>
     </option>
   </component>

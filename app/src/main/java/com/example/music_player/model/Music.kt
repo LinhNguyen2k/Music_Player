@@ -1,6 +1,7 @@
 package com.example.music_player.model
 
 import android.media.MediaMetadataRetriever
+import com.example.music_player.OfflineActivity
 import com.example.music_player.Player
 import java.util.concurrent.TimeUnit
 
@@ -11,10 +12,11 @@ data class Music(
     val artist: String,
     val duration: Long = 0,
     val path: String,
-    val img: String,
+    val artUri: String,
+    val isCheck : Boolean
 )
 
-fun formatDuration(duration: Long): String {
+fun formatDurations(duration: Long): String {
 
     val minutes = TimeUnit.MINUTES.convert(duration, TimeUnit.MILLISECONDS)
     val seconds = (TimeUnit.SECONDS.convert(duration, TimeUnit.MILLISECONDS) -
@@ -32,24 +34,52 @@ fun getImage(path: String): ByteArray? {
 fun setSongPosition(check: Boolean) {
     if (!Player.repeat && !Player.repeatAll) {
         if (check) {
+            if (Player.isChekOnline) {
+                if (Player.musicListPlayer.size - 1 == Player.songPosition) {
+                    Player.songPosition = 0
+                } else {
+                    ++Player.songPosition
+                }
+            } else {
+                if (OfflineActivity.MusicList.size - 1 == Player.songPosition) {
+                    Player.songPosition = 0
+                } else {
+                    ++Player.songPosition
+                }
+            }
+
+
+        } else {
+            if (Player.isChekOnline) {
+                if (0 == Player.songPosition) {
+                    Player.songPosition = Player.musicListPlayer.size - 1
+                } else {
+                    --Player.songPosition
+                }
+            } else {
+                if (0 == Player.songPosition) {
+                    Player.songPosition = OfflineActivity.MusicList.size - 1
+                } else {
+                    --Player.songPosition
+                }
+            }
+
+
+        }
+    } else if (Player.repeatAll && !Player.repeat) {
+        if (Player.isChekOnline) {
             if (Player.musicListPlayer.size - 1 == Player.songPosition) {
                 Player.songPosition = 0
             } else {
                 ++Player.songPosition
             }
         } else {
-            if (0 == Player.songPosition) {
-                Player.songPosition = Player.musicListPlayer.size - 1
+            if (OfflineActivity.MusicList.size - 1 == Player.songPosition) {
+                Player.songPosition = 0
             } else {
-                --Player.songPosition
+                ++Player.songPosition
             }
         }
-    } else if (Player.repeatAll && !Player.repeat) {
-        if (Player.musicListPlayer.size - 1 == Player.songPosition) {
-            Player.songPosition = 0
-        } else {
-            ++Player.songPosition
-        }
-    }
 
+    }
 }

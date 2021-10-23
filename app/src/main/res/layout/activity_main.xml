@@ -6,72 +6,199 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
+
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/line1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            app:layout_constraintGuide_percent="0.15" />
+
+        <LinearLayout
+            android:id="@+id/layout_internet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_baseline_sentiment_very_dissatisfied_24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="  Không có kết nối mạng !" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/layout_notification"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rất tiếc, không có kết quả phù hợp." />
+        </LinearLayout>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <TextView
-                android:layout_margin="10dp"
-                android:layout_width="wrap_content"
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="20dp"
+                android:layout_marginRight="20dp"
+                android:background="@drawable/custom_layout_list_notes"
+                android:orientation="horizontal"
+                android:padding="5dp"
+                android:paddingLeft="20dp">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:src="@drawable/ic_baseline_search_24" />
+
+                <EditText
+                    android:id="@+id/edt_filter"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@null"
+                    android:hint="Tìm kiếm"
+                    android:textColor="@color/black"
+                    android:textColorHint="#272626" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layout_top"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Danh Sách Phát"
-                android:textSize="20dp"
-                android:textColor="#009688"/>
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:text="Top 100"
+                    android:textColor="#171717"
+                    android:textSize="22dp"
+                    android:textStyle="normal" />
+
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toTopOf="@id/fr_nowPlaying"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="@id/line1">
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rc_list_songs"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="10dp"/>
-            <!--    <LinearLayout-->
-            <!--        android:id="@+id/layout_bnt"-->
-            <!--        app:layout_constraintTop_toTopOf="parent"-->
-            <!--        android:layout_width="match_parent"-->
-            <!--        android:layout_height="90dp"-->
-            <!--        android:orientation="horizontal">-->
-            <!--        <androidx.appcompat.widget.AppCompatButton-->
-            <!--            android:id="@+id/btn_shuffle"-->
-            <!--            android:layout_width="0dp"-->
-            <!--            android:layout_height="match_parent"-->
-            <!--            android:layout_weight="1"-->
-            <!--            android:text="@string/shuffle_btn"-->
-            <!--            android:textAllCaps="false"-->
-            <!--            android:drawableTop="@drawable/ic_baseline_shuffle_24"-->
-            <!--            android:contentDescription="@string/shuffle_btn"-->
-            <!--            style="@style/Widget.AppCompat.Button.Borderless"/>-->
-            <!--        <androidx.appcompat.widget.AppCompatButton-->
-            <!--            android:id="@+id/btn_favorite"-->
-            <!--            android:layout_width="0dp"-->
-            <!--            android:layout_height="match_parent"-->
-            <!--            android:layout_weight="1"-->
-            <!--            android:text="@string/favorite_btn"-->
-            <!--            android:textAllCaps="false"-->
-            <!--            android:drawableTop="@drawable/ic_baseline_favorite_24"-->
-            <!--            android:contentDescription="@string/favorite_btn"-->
-            <!--            style="@style/Widget.AppCompat.Button.Borderless"/>-->
-            <!--        <androidx.appcompat.widget.AppCompatButton-->
-            <!--            android:id="@+id/btn_playLists"-->
-            <!--            android:layout_width="0dp"-->
-            <!--            android:layout_height="match_parent"-->
-            <!--            android:layout_weight="1"-->
-            <!--            android:text="@string/playlist_btn"-->
-            <!--            android:textAllCaps="false"-->
-            <!--            android:drawableTop="@drawable/ic_baseline_library_music_24"-->
-            <!--            android:contentDescription="@string/playlist_btn"-->
-            <!--            style="@style/Widget.AppCompat.Button.Borderless"/>-->
-            <!--    </LinearLayout>-->
-        </LinearLayout>
-        <androidx.fragment.app.FragmentContainerView
-            android:id="@+id/fr_nowPlaying"
-            android:layout_width="match_parent"
+                android:layout_margin="10dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rc_list_songs_search"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:visibility="gone" />
+        </RelativeLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            tools:layout="@layout/fragment_now_playing"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/fr_nowPlaying"
+            android:name="com.example.music_player.NowPlayingFragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toTopOf="@id/layout_bottom"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
-            android:name="com.example.music_player.NowPlayingFragment"/>
+            tools:layout="@layout/fragment_now_playing" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0.2dp"
+            android:alpha="0.8"
+            android:background="@color/black"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/fr_nowPlaying" />
+
+        <LinearLayout
+            android:id="@+id/layout_bottom"
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:background="#F2F4F4"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent">
+
+            <ImageView
+                android:id="@+id/img_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:alpha="0.7"
+                android:backgroundTint="#2F3231"
+                android:src="@drawable/ic_baseline_favorite_24" />
+
+            <ImageView
+                android:id="@+id/img_download"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.5"
+                android:alpha="0.7"
+                android:src="@drawable/ic_baseline_people_alt_24" />
+        </LinearLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

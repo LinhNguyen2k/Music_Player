@@ -1,58 +1,68 @@
 package com.example.music_player
 
-import android.annotation.SuppressLint
+import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.provider.MediaStore
-import android.widget.Toast
+import android.text.Editable
+import android.text.TextWatcher
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.music_player.JsonSearch.MusicSearch
 import com.example.music_player.adapter.MusicAdapter
-import com.example.music_player.model.Music
+import com.example.music_player.adapter.MusicSearchAdapter
+import com.example.music_player.api.ApiService
+import com.example.music_player.json.Root
+import com.example.music_player.json.Song
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
-import java.io.File
+import retrofit2.Call
+import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     private lateinit var musicAdapter: MusicAdapter
+    private lateinit var musicSearchAdapter: MusicSearchAdapter
 
-    companion object {
-        lateinit var MusicList: ArrayList<Music>
+    var tv_search = ""
+    companion object{
+          var MusicList  = ArrayList<Song>()
+          var listSearch = ArrayList<com.example.music_player.JsonSearch.Song>()
     }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()
-        requestRunTimePermission()
         initViews()
+        FavoriteActivity.favoriteList = ArrayList()
+        val editor = getSharedPreferences("FAVORITE", MODE_PRIVATE)
+        val jsonString = editor.getString("FavoriteSongs",null)
+        val typeToken = object : TypeToken<ArrayList<Song>>(){}.type
+        if (jsonString != null){
+            val data : ArrayList<Song> = GsonBuilder().create().fromJson(jsonString, typeToken)
+            FavoriteActivity.favoriteList.addAll(data)
+        }
 
+        requestRunTimePermission()
+        img_user.setOnClickListener {
+            startActivity(Intent(applicationContext,FavoriteActivity::class.java))
+        }
+        img_download.setOnClickListener {
+            startActivity(Intent(applicationContext,OfflineActivity::class.java))
+        }
+        edt_filter.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: Editable) {
+                tv_search = edt_filter.text.toString()
+                searchSong()
+
+            }
+        })
     }
-
-    private fun initViews() {
-
-        MusicList = getAllAudio()
-        rc_list_songs.setHasFixedSize(true)
-        rc_list_songs.setItemViewCacheSize(13)
-        rc_list_songs.layoutManager = LinearLayoutManager(this)
-        musicAdapter = MusicAdapter(MusicList, applicationContext)
-        rc_list_songs.adapter = musicAdapter
-
-//        btn_shuffle.setOnClickListener {
-//            val intent = Intent(applicationContext, Player::class.java)
-//            intent.putExtra("index", 0)
-//            intent.putExtra("class", "MainActivity")
-//            startActivity(intent)
-//        }
-//        btn_favorite.setOnClickListener {
-//            startActivity(Intent(applicationContext, Favorite_Player::class.java))
-//        }
-//        btn_playLists.setOnClickListener {
-//            startActivity(Intent(applicationContext, PlayList::class.java))
-//        }
-    }
-
     private fun requestRunTimePermission() {
         if (ActivityCompat.checkSelfPermission(applicationContext,
                 android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -73,7 +83,7 @@ class MainActivity : AppCompatActivity() {
 
         if (requestCode == 13) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(applicationContext, "Đã được cho phép", Toast.LENGTH_SHORT).show()
+
             } else {
                 ActivityCompat.requestPermissions(this,
                     arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
@@ -81,56 +91,76 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    fun searchSong(){
+        if (tv_search == "") {
+            progressBar.visibility = View.GONE
+            rc_list_songs_search.visibility = View.GONE
+            rc_list_songs.visibility = View.VISIBLE
+        } else {
+            ApiService.apiSearch.callAPISearch("song","500",tv_search).enqueue(object :
+                retrofit2.Callback<MusicSearch> {
+                override fun onResponse(call: Call<MusicSearch>, response: Response<MusicSearch>) {
+                    val responseBody = response.body()!!
+                    layout_notification.visibility = View.GONE
+                    progressBar.visibility = View.GONE
+                    rc_list_songs_search.visibility = View.VISIBLE
+                    rc_list_songs.visibility = View.GONE
+                    listSearch.clear()
+                    if(responseBody.data.isNotEmpty()) {
+                        listSearch.addAll(responseBody.data[0].song)
 
-    @SuppressLint("Range")
-    private fun getAllAudio(): ArrayList<Music> {
-        val tempList = ArrayList<Music>()
-        val selection = MediaStore.Audio.Media.IS_MUSIC + " != 0"
-        val projection = arrayOf(MediaStore.Audio.Media._ID,
-            MediaStore.Audio.Media.TITLE,
-            MediaStore.Audio.Media.ALBUM,
-            MediaStore.Audio.Media.ARTIST,
-            MediaStore.Audio.Media.DURATION,
-            MediaStore.Audio.Media.DATE_ADDED,
-            MediaStore.Audio.Media.DATA,
-            MediaStore.Audio.Media.ALBUM_ID)
-        val cursor = this.contentResolver.query(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI,
-            projection,
-            selection,
-            null,
-            MediaStore.Audio.Media.DATE_ADDED,
-            null)
-
-        if (cursor != null) {
-            if (cursor.moveToFirst())
-                do {
-                    val id = cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media._ID)))
-                    val title =
-                        cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.TITLE)))
-                    val album =
-                        cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM)))
-                    val artist =
-                        cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.ARTIST)))
-                    val durationC =
-                        cursor.getLong((cursor.getColumnIndex(MediaStore.Audio.Media.DURATION)))
-                    val albumC =
-                        cursor.getLong(cursor.getColumnIndex(MediaStore.Audio.Media.ALBUM_ID))
-                            .toString()
-                    val uri = Uri.parse("content://media/external/audio/albumart")
-                    val imgs = Uri.withAppendedPath(uri, albumC).toString()
-                    val pathC =
-                        cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.DATA)))
-
-                    val music = Music(id, title, album, artist, durationC, pathC, img = imgs)
-                    val file = File(music.path)
-                    if (file.exists()) {
-                        tempList.add(music)
                     }
+                    rc_list_songs_search.setHasFixedSize(true)
+                    rc_list_songs_search.layoutManager = LinearLayoutManager(this@MainActivity)
+                    musicSearchAdapter = MusicSearchAdapter(listSearch,this@MainActivity)
+                    rc_list_songs_search.adapter = musicSearchAdapter
+                    musicSearchAdapter.notifyDataSetChanged()
 
-                } while (cursor.moveToNext())
-            cursor.close()
+                }
+
+                override fun onFailure(call: Call<MusicSearch>, t: Throwable) {
+
+                }
+
+
+            })
         }
-
-        return tempList
     }
+    private fun initViews() {
+
+        ApiService.apiService.callAPI(0,0,0,"song",false).enqueue(object :
+            retrofit2.Callback<Root> {
+            override fun onResponse(call: Call<Root>, response: Response<Root>) {
+                val root =response.body()!!
+                layout_notification.visibility = View.GONE
+                MusicList.addAll(root.data.song)
+                rc_list_songs.setHasFixedSize(true)
+                rc_list_songs.layoutManager = LinearLayoutManager(this@MainActivity)
+                musicAdapter = MusicAdapter(MusicList,this@MainActivity)
+                rc_list_songs.adapter = musicAdapter
+                progressBar.visibility = View.GONE
+                layout_internet.visibility = View.GONE
+            }
+
+            override fun onFailure(call: Call<Root>, t: Throwable) {
+                layout_internet.visibility = View.VISIBLE
+            }
+
+        })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val editor = getSharedPreferences("FAVORITE", MODE_PRIVATE).edit()
+        val jsonString = GsonBuilder().create().toJson(FavoriteActivity.favoriteList)
+        editor.putString("FavoriteSongs",jsonString)
+        editor.apply()
+
+//        val editor2 = getSharedPreferences("SONGDOWNLOAD", MODE_PRIVATE).edit()
+//        val jsonString2 = GsonBuilder().create().toJson(OfflineActivity.MusicList )
+//        editor2.putString("DownloadSongs",jsonString2)
+//        editor2.apply()
+    }
+
 }
+

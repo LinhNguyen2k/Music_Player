@@ -11,7 +11,7 @@
         android:layout_height="60dp"
         android:layout_marginStart="5dp"
         android:src="@mipmap/music_player"
-        app:shapeAppearanceOverlay="@style/curved" />
+        app:shapeAppearanceOverlay="@style/custom_icon" />
     <TextView
         android:maxLines="1"
         android:ellipsize="end"
@@ -41,7 +41,7 @@
         android:layout_height="60dp"
         android:layout_alignParentEnd="true"
         android:gravity="center"
-        android:text="@string/tv_start"
+        android:text="@string/time_minutes_seconds_formatter"
         android:textColor="@color/black" />
 
 </RelativeLayout>
