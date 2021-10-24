@@ -41,6 +41,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         var musicListSearch = ArrayList<Song>()
         var listPhu = ArrayList<Song>()
         var musicListOffLine = ArrayList<Music>()
+        var listAddSongOffline = ArrayList<Music>()
         var songPosition = 0
         var isPlaying: Boolean = false
         var musicService: MusicService? = null
@@ -77,16 +78,19 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             nextSongMusic(true)
         }
         btn_play.setOnClickListener {
-            val intent = Intent(applicationContext,
-                PlayList::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            intent.putExtra("idSongs", musicListPlayer[songPosition].id)
-            intent.putExtra("typeSongs", musicListPlayer[songPosition].type)
-            ContextCompat.startActivity(applicationContext, intent, null)
+            if (!isOnline(applicationContext)){
+                Toast.makeText(applicationContext,"Xin bạn kiểm tra lại kết nối mạng",Toast.LENGTH_LONG).show()
+                return@setOnClickListener
+            }else{
+                val intent = Intent(applicationContext,
+                    PlayList::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.putExtra("idSongs", musicListPlayer[songPosition].id)
+                intent.putExtra("typeSongs", musicListPlayer[songPosition].type)
+                ContextCompat.startActivity(applicationContext, intent, null)
+            }
+
         }
-        if (!isOnline(applicationContext)){
-            btn_play.isEnabled = false
-            btn_play.alpha = 0.4f
-        }
+
         btn_shuffle.setOnClickListener {
             if (!shuffle) {
                 shuffle = true
@@ -154,7 +158,6 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
     private fun setLayout() {
 //
         if (!isChekOnline) {
-//            favoriteIndexOffline = favoriteCheckOffline(musicListOffLine[songPosition].id)
             val imageArt = getImage(musicListOffLine[songPosition].path)
             if (imageArt != null) {
                 BitmapFactory.decodeByteArray(imageArt, 0, imageArt.size)
@@ -211,7 +214,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             // inflate the popup menu
             menuInflater.inflate(R.menu.menu, menu)
 
-            if (isFavorite) {
+            if (isFavorite && isChekOnline) {
                 menuOpts.getItem(0).setIcon(R.drawable.ic_baseline_favorite)
                 menuOpts.getItem(0).title = "Xóa khỏi danh sách"
             } else {
@@ -224,14 +227,20 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                     R.id.item_favorite -> {
                         if (isFavorite) {
                             isFavorite = false
+                            if (isChekOnline) {
                                 FavoriteActivity.favoriteList.removeAt(favoriteIndex)
+                                Toast.makeText(applicationContext,
+                                    "Đã xóa bài hát khỏi thư viện",
+                                    Toast.LENGTH_LONG).show()
+                            }
                         } else {
 
-                            if (isChekOnline && musicListPlayer[songPosition].isCheck) {
+                            if (isChekOnline ) {
                                 isFavorite = true
                                 FavoriteActivity.favoriteList.add(0,musicListPlayer[songPosition])
+                                Toast.makeText(applicationContext,"Đã thêm bài hát vào thư viện",Toast.LENGTH_LONG).show()
                             } else {
-                                isFavorite = false
+
                                 val name = OfflineActivity.MusicList[songPosition].title
                                 val id = OfflineActivity.MusicList[songPosition].id
                                 val artist = OfflineActivity.MusicList[songPosition].artist
@@ -264,6 +273,8 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                                     -1,
                                     "",
                                     false))
+                                isFavorite = false
+                                Toast.makeText(applicationContext,"Đã thêm bài hát vào thư viện",Toast.LENGTH_LONG).show()
                             }
 
                         }

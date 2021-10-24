@@ -114,6 +114,7 @@ class MusicService : Service() {
                 startForeground(13, notification)
             }
         }
+
         else if (!Player.isChekOnline){
 
             val imageArt = getImage(Player.musicListOffLine[Player.songPosition].path)

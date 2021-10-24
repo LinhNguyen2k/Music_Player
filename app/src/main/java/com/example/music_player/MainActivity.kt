@@ -1,13 +1,11 @@
 package com.example.music_player
 
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.ActivityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.music_player.JsonSearch.MusicSearch
 import com.example.music_player.adapter.MusicAdapter
@@ -37,6 +35,8 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         supportActionBar?.hide()
         initViews()
+
+
         FavoriteActivity.favoriteList = ArrayList()
         val editor = getSharedPreferences("FAVORITE", MODE_PRIVATE)
         val jsonString = editor.getString("FavoriteSongs",null)
@@ -46,7 +46,6 @@ class MainActivity : AppCompatActivity() {
             FavoriteActivity.favoriteList.addAll(data)
         }
 
-        requestRunTimePermission()
         img_user.setOnClickListener {
             startActivity(Intent(applicationContext,FavoriteActivity::class.java))
         }
@@ -63,34 +62,7 @@ class MainActivity : AppCompatActivity() {
             }
         })
     }
-    private fun requestRunTimePermission() {
-        if (ActivityCompat.checkSelfPermission(applicationContext,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            ActivityCompat.requestPermissions(this,
-                arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                13)
-        }
-    }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-
-        if (requestCode == 13) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-            } else {
-                ActivityCompat.requestPermissions(this,
-                    arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),
-                    13)
-            }
-        }
-    }
     fun searchSong(){
         if (tv_search == "") {
             progressBar.visibility = View.GONE
@@ -133,15 +105,14 @@ class MainActivity : AppCompatActivity() {
             override fun onResponse(call: Call<Root>, response: Response<Root>) {
                 val root =response.body()!!
                 layout_notification.visibility = View.GONE
+                progressBar.visibility = View.GONE
+                layout_internet.visibility = View.GONE
                 MusicList.addAll(root.data.song)
                 rc_list_songs.setHasFixedSize(true)
                 rc_list_songs.layoutManager = LinearLayoutManager(this@MainActivity)
                 musicAdapter = MusicAdapter(MusicList,this@MainActivity)
                 rc_list_songs.adapter = musicAdapter
-                progressBar.visibility = View.GONE
-                layout_internet.visibility = View.GONE
             }
-
             override fun onFailure(call: Call<Root>, t: Throwable) {
                 layout_internet.visibility = View.VISIBLE
             }
@@ -151,7 +122,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
         val editor = getSharedPreferences("FAVORITE", MODE_PRIVATE).edit()
         val jsonString = GsonBuilder().create().toJson(FavoriteActivity.favoriteList)
         editor.putString("FavoriteSongs",jsonString)

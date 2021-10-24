@@ -30,11 +30,11 @@ data class Song(
     var title: String,
     val total: Int,
     val type: String,
-    val isCheck : Boolean = true
-){
+    val isCheck: Boolean = true,
+) {
     constructor() : this(
-       Album(),Artist(), emptyList(),"","",-1,0,"",false,false,"",
-        "","","","","","",-1,"","","","",-1,"", true
+        Album(), Artist(), emptyList(), "", "", -1, 0, "", false, false, "",
+        "", "", "", "", "", "", -1, "", "", "", "", -1, "", true
     )
 }
 
@@ -43,27 +43,24 @@ fun formatDuration(seconds: Long): String = if (seconds < 60) {
 } else {
     DateUtils.formatElapsedTime(seconds)
 }
-fun favoriteCheck(id : String) : Int{
+
+fun favoriteCheck(id: String): Int {
     Player.isFavorite = false
     FavoriteActivity.favoriteList.forEachIndexed { index, song ->
-        if (id == song.id){
-            Player.isFavorite = true
-            return index
+        if (song.isCheck){
+            if (id == song.id) {
+                Player.isFavorite = true
+                return index
+            }
+        } else{
+            Player.isFavorite = false
         }
+
     }
     return -1
 }
-fun favoriteCheckOffline(name : String) {
-    Player.isFavorite = false
-    for (i in 0 until FavoriteActivity.favoriteList.size - 1){
-        if (name.contains(Player.musicListOffLine[Player.songPosition].title))
-        {
-            Player.isFavorite = true
-        }
-    }
 
-}
-fun downloadCheck(id : String) : Int{
+fun downloadCheck(id: String): Int {
     Player.isDownload = false
     OfflineActivity.MusicList.forEachIndexed { index, music ->
         if (id == music.id) {
