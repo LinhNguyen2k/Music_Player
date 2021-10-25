@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 override fun onFailure(call: Call<MusicSearch>, t: Throwable) {
-
+                    layout_internet.visibility = View.VISIBLE
                 }
 
 

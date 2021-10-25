@@ -110,7 +110,6 @@ class MusicFavoriteAdapter(private var listMusic: ArrayList<Song>, private val c
 
                 listAddSongOffline.clear()
                 for (i in 0 until FavoriteActivity.favoriteList.size ) {
-
                     if (!listMusic[i].isCheck) {
                         val name = listMusic[i].artists_names
                         val title = listMusic[i].title

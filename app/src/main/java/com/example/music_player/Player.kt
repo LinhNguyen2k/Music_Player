@@ -28,6 +28,8 @@ import com.example.music_player.model.Music
 import com.example.music_player.model.formatDurations
 import com.example.music_player.model.getImage
 import com.example.music_player.model.setSongPosition
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_player.*
 import retrofit2.Call
@@ -51,6 +53,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         var shuffle: Boolean = false
         var isFavorite: Boolean = false
         var favoriteIndex: Int = -1
+        var favoriteIndexOffline: Int = -1
         var downloadIndex: Int = -1
         var isChekOnline: Boolean = false
         var isDownload: Boolean = false
@@ -78,10 +81,12 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             nextSongMusic(true)
         }
         btn_play.setOnClickListener {
-            if (!isOnline(applicationContext)){
-                Toast.makeText(applicationContext,"Xin bạn kiểm tra lại kết nối mạng",Toast.LENGTH_LONG).show()
+            if (!isOnline(applicationContext)) {
+                Toast.makeText(applicationContext,
+                    "Xin bạn kiểm tra lại kết nối mạng",
+                    Toast.LENGTH_LONG).show()
                 return@setOnClickListener
-            }else{
+            } else {
                 val intent = Intent(applicationContext,
                     PlayList::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 intent.putExtra("idSongs", musicListPlayer[songPosition].id)
@@ -158,6 +163,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
     private fun setLayout() {
 //
         if (!isChekOnline) {
+            favoriteIndexOffline = favoriteCheckOffline(musicListOffLine[songPosition].artist)
             val imageArt = getImage(musicListOffLine[songPosition].path)
             if (imageArt != null) {
                 BitmapFactory.decodeByteArray(imageArt, 0, imageArt.size)
@@ -178,32 +184,32 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             tv_titleSong.text = musicListOffLine[songPosition].title
         }
 
-            if (isChekOnline && musicListPlayer[songPosition].isCheck) {
-                setLayoutTopList()
-                favoriteIndex = favoriteCheck(musicListPlayer[songPosition].id)
-                downloadIndex = downloadCheck(musicListPlayer[songPosition].id)
-                val linkImg = musicListPlayer[songPosition].thumbnail.removeRange(34, 48)
-                Picasso.with(this).load(linkImg).into(binding.imgSongs)
-                if (repeat) {
-                    btn_repeatOne.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
+        if (isChekOnline && musicListPlayer[songPosition].isCheck) {
+            setLayoutTopList()
+            favoriteIndex = favoriteCheck(musicListPlayer[songPosition].id)
+            downloadIndex = downloadCheck(musicListPlayer[songPosition].id)
+            val linkImg = musicListPlayer[songPosition].thumbnail.removeRange(34, 48)
+            Picasso.with(this).load(linkImg).into(binding.imgSongs)
+            if (repeat) {
+                btn_repeatOne.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
+            }
+            if (shuffle) {
+                btn_shuffle.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
+            }
+            if (repeatAll) {
+                btn_repeatAll.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
+            }
+            tv_songName.text = musicListPlayer[songPosition].artists_names
+            tv_titleSong.text = musicListPlayer[songPosition].title
+            when (intent.getStringExtra("class")) {
+                "MusicAdapter" -> {
+                    setLayoutTopList()
                 }
-                if (shuffle) {
-                    btn_shuffle.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
-                }
-                if (repeatAll) {
-                    btn_repeatAll.setColorFilter(ContextCompat.getColor(this, R.color.purple_700))
-                }
-                tv_songName.text = musicListPlayer[songPosition].artists_names
-                tv_titleSong.text = musicListPlayer[songPosition].title
-                when (intent.getStringExtra("class")) {
-                    "MusicAdapter" -> {
-                        setLayoutTopList()
-                    }
-                    "MusicListAdapter" -> {
-                        setLayoutTopList()
-                    }
+                "MusicListAdapter" -> {
+                    setLayoutTopList()
                 }
             }
+        }
 
     }
 
@@ -211,10 +217,10 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         val popup = PopupMenu(this, img_more)
         val menuOpts = popup.menu
         popup.apply {
-            // inflate the popup menu
+            // inflate the popup menu && isChekOnline
             menuInflater.inflate(R.menu.menu, menu)
 
-            if (isFavorite && isChekOnline) {
+            if (isFavorite) {
                 menuOpts.getItem(0).setIcon(R.drawable.ic_baseline_favorite)
                 menuOpts.getItem(0).title = "Xóa khỏi danh sách"
             } else {
@@ -232,15 +238,24 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                                 Toast.makeText(applicationContext,
                                     "Đã xóa bài hát khỏi thư viện",
                                     Toast.LENGTH_LONG).show()
+                                updateLayouFavourite()
+                            } else {
+                                FavoriteActivity.favoriteList.removeAt(favoriteIndexOffline)
+                                Toast.makeText(applicationContext,
+                                    "Đã xóa bài hát khỏi thư viện",
+                                    Toast.LENGTH_LONG).show()
+                                updateLayouFavourite()
                             }
                         } else {
 
-                            if (isChekOnline ) {
+                            if (isChekOnline) {
                                 isFavorite = true
-                                FavoriteActivity.favoriteList.add(0,musicListPlayer[songPosition])
-                                Toast.makeText(applicationContext,"Đã thêm bài hát vào thư viện",Toast.LENGTH_LONG).show()
+                                FavoriteActivity.favoriteList.add(0, musicListPlayer[songPosition])
+                                Toast.makeText(applicationContext,
+                                    "Đã thêm bài hát vào thư viện",
+                                    Toast.LENGTH_LONG).show()
                             } else {
-
+                                isFavorite = true
                                 val name = OfflineActivity.MusicList[songPosition].title
                                 val id = OfflineActivity.MusicList[songPosition].id
                                 val artist = OfflineActivity.MusicList[songPosition].artist
@@ -248,33 +263,36 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                                 val path = OfflineActivity.MusicList[songPosition].path
                                 val img = OfflineActivity.MusicList[songPosition].artUri
 
-                                FavoriteActivity.favoriteList.add(FavoriteActivity.favoriteList.size,Song(Album(),
-                                    Artist(),
-                                    emptyList(),
-                                    artist,
-                                    "",
-                                    -1,
-                                    duration,
-                                    id,
-                                    false,
-                                    false,
-                                    "",
-                                    "",
-                                    "",
-                                    "",
-                                    "",
-                                    "",
-                                    "",
-                                    -1,
-                                    "",
-                                    path,
-                                    img,
-                                    name,
-                                    -1,
-                                    "",
-                                    false))
-                                isFavorite = false
-                                Toast.makeText(applicationContext,"Đã thêm bài hát vào thư viện",Toast.LENGTH_LONG).show()
+                                FavoriteActivity.favoriteList.add(FavoriteActivity.favoriteList.size,
+                                    Song(Album(),
+                                        Artist(),
+                                        emptyList(),
+                                        artist,
+                                        "",
+                                        -1,
+                                        duration,
+                                        id,
+                                        false,
+                                        false,
+                                        "",
+                                        "",
+                                        "",
+                                        "",
+                                        "",
+                                        "",
+                                        "",
+                                        -1,
+                                        "",
+                                        path,
+                                        img,
+                                        name,
+                                        -1,
+                                        "",
+                                        false))
+
+                                Toast.makeText(applicationContext,
+                                    "Đã thêm bài hát vào thư viện",
+                                    Toast.LENGTH_LONG).show()
                             }
 
                         }
@@ -364,7 +382,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             musicService!!.mediaPlayer!!.reset()
             if (isChekOnline) {
                 musicService!!.mediaPlayer!!.setDataSource("http://api.mp3.zing.vn/api/streaming/audio/${musicListPlayer[songPosition].id}/320")
-            } else if (!isChekOnline){
+            } else if (!isChekOnline) {
                 musicService!!.mediaPlayer!!.setDataSource(musicListOffLine[songPosition].path)
             }
             musicService!!.mediaPlayer!!.prepare()
@@ -403,7 +421,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                 binding.seekBar.progress = musicService!!.mediaPlayer!!.currentPosition
                 binding.seekBar.max = musicService!!.mediaPlayer!!.duration
             }
-            "NowPlayingOffline" ->{
+            "NowPlayingOffline" -> {
                 setLayout()
                 tv_startTime.text =
                     formatDurations(musicService!!.mediaPlayer!!.currentPosition.toLong())
@@ -440,11 +458,11 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                 val intent = Intent(this, MusicService::class.java)
                 bindService(intent, this, BIND_AUTO_CREATE)
                 startService(intent)
-                if (FavoriteActivity.favoriteList[songPosition].isCheck){
+                if (FavoriteActivity.favoriteList[songPosition].isCheck) {
                     musicListPlayer = ArrayList()
                     musicListPlayer.addAll((listPhu))
                     setLayout()
-                }else {
+                } else {
                     musicListOffLine = ArrayList()
                     musicListOffLine.addAll(OfflineActivity.MusicList)
                     setLayout()
@@ -467,6 +485,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         isPlaying = false
         musicService!!.mediaPlayer!!.pause()
     }
+
     private fun nextSongMusic(check: Boolean) {
         if (check) {
             setSongPosition(check = true)
@@ -549,10 +568,22 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             NowPlayingFragment.binding.imgSong.setImageBitmap(BitmapFactory.decodeByteArray(imageArt,
                 0,
                 imageArt!!.size))
-            NowPlayingFragment.binding.tvSongNameFragment.text = musicListOffLine[songPosition].title
+            NowPlayingFragment.binding.tvSongNameFragment.text =
+                musicListOffLine[songPosition].title
             setLayout()
         }
 
+    }
+
+    fun updateLayouFavourite() {
+        FavoriteActivity.favoriteList = ArrayList()
+        val editor = getSharedPreferences("FAVORITE", MODE_PRIVATE)
+        val jsonString = editor.getString("FavoriteSongs", null)
+        val typeToken = object : TypeToken<ArrayList<Song>>() {}.type
+        if (jsonString != null) {
+            val data: ArrayList<Song> = GsonBuilder().create().fromJson(jsonString, typeToken)
+            FavoriteActivity.favoriteList.addAll(data)
+        }
     }
 
     @RequiresApi(Build.VERSION_CODES.M)

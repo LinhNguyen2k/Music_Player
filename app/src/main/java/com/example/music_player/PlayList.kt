@@ -30,7 +30,6 @@ class PlayList : AppCompatActivity() {
         }
     }
      fun initViews() {
-
         //http://mp3.zing.vn/xhr/recommend?type=audio&id=ZW67OIA0
         idSongs = intent.getStringExtra("idSongs").toString()
         typeSongs = intent.getStringExtra("typeSongs").toString()
