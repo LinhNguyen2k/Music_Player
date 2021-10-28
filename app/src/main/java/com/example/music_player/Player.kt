@@ -20,13 +20,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.example.music_player.JsonInfo.MusicInfo
 import com.example.music_player.api.ApiMusicInfo
 import com.example.music_player.databinding.ActivityPlayerBinding
-import com.example.music_player.json.*
+import com.example.music_player.model.JsonInfo.MusicInfo
 import com.example.music_player.model.Music
 import com.example.music_player.model.formatDurations
 import com.example.music_player.model.getImage
+import com.example.music_player.model.json.*
 import com.example.music_player.model.setSongPosition
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
@@ -72,6 +72,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             else playMusic()
         }
         img_back.setOnClickListener {
+            startActivity(Intent(applicationContext,MainActivity::class.java))
             finish()
         }
         btn_nextLeft.setOnClickListener {
@@ -608,6 +609,9 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         }
         return false
     }
-
+    override fun onBackPressed() {
+        startActivity(Intent(applicationContext,MainActivity::class.java))
+        finish()
+    }
 }
 

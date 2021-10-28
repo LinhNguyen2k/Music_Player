@@ -13,10 +13,10 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.music_player.Player
 import com.example.music_player.R
-import com.example.music_player.json.formatDuration
 import com.example.music_player.model.Music
 import com.example.music_player.model.formatDurations
 import com.example.music_player.model.getImage
+import com.example.music_player.model.json.formatDuration
 
 class MusicOfflineAdapter(private var listMusic : ArrayList<Music>, private val context : Context) :
     RecyclerView.Adapter<MusicOfflineAdapter.ViewHolder>() {

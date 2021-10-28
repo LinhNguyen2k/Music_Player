@@ -22,11 +22,11 @@ import com.example.music_player.OfflineActivity
 import com.example.music_player.Player
 import com.example.music_player.Player.Companion.listAddSongOffline
 import com.example.music_player.R
-import com.example.music_player.json.Song
-import com.example.music_player.json.formatDuration
 import com.example.music_player.model.Music
 import com.example.music_player.model.formatDurations
 import com.example.music_player.model.getImage
+import com.example.music_player.model.json.Song
+import com.example.music_player.model.json.formatDuration
 import com.squareup.picasso.Picasso
 
 class MusicFavoriteAdapter(private var listMusic: ArrayList<Song>, private val context: Context) :
@@ -89,8 +89,8 @@ class MusicFavoriteAdapter(private var listMusic: ArrayList<Song>, private val c
                     Player.isChekOnline = true
                     val intent =
                         Intent(context, Player::class.java).addFlags(FLAG_ACTIVITY_NEW_TASK)
-                    intent.putExtra("idSongs", listMusic[position].id)
-                    intent.putExtra("typeSongs", listMusic[position].type)
+//                    intent.putExtra("idSongs", listMusic[position].id)
+//                    intent.putExtra("typeSongs", listMusic[position].type)
                     intent.putExtra("index", position)
                     intent.putExtra("class", "MusicFavoriteAdapter")
                     Player.listPhu.clear()
@@ -171,8 +171,8 @@ class MusicFavoriteAdapter(private var listMusic: ArrayList<Song>, private val c
 //                        thumbnail,
 //                        false))
 //                }
-                intent.putExtra("idSongs", listMusic[position].id)
-                intent.putExtra("typeSongs", listMusic[position].type)
+//                intent.putExtra("idSongs", listMusic[position].id)
+//                intent.putExtra("typeSongs", listMusic[position].type)
                 intent.putExtra("index", position)
                 intent.putExtra("class", "MusicFavoriteAdapter")
                 ContextCompat.startActivity(context, intent, null)

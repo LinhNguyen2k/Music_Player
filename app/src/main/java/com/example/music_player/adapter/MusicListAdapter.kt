@@ -11,8 +11,8 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.example.music_player.Player
 import com.example.music_player.R
-import com.example.music_player.json.Song
-import com.example.music_player.json.formatDuration
+import com.example.music_player.model.json.Song
+import com.example.music_player.model.json.formatDuration
 import com.squareup.picasso.Picasso
 
 class MusicListAdapter(private val listMusic : ArrayList<Song>, private val context : Context) :
@@ -42,8 +42,8 @@ class MusicListAdapter(private val listMusic : ArrayList<Song>, private val cont
         holder.itemView.setOnClickListener {
             val intent  = Intent(context, Player::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             Player.isChekOnline = true
-            intent.putExtra("idSongs", listMusic[position].id)
-            intent.putExtra("typeSongs", listMusic[position].type)
+//            intent.putExtra("idSongs", listMusic[position].id)
+//            intent.putExtra("typeSongs", listMusic[position].type)
             intent.putExtra("index", position)
             intent.putExtra("class", "MusicListAdapter")
             ContextCompat.startActivity(context, intent, null)

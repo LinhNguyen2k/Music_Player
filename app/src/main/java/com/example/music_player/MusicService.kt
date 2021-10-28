@@ -12,7 +12,7 @@ import android.os.IBinder
 import android.os.Looper
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.NotificationCompat
-import com.example.music_player.JsonInfo.MusicInfo
+import com.example.music_player.model.JsonInfo.MusicInfo
 import com.example.music_player.api.ApiMusicInfo
 import com.example.music_player.model.formatDurations
 import com.example.music_player.model.getImage

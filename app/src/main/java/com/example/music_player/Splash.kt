@@ -15,11 +15,20 @@ class Splash : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
         supportActionBar?.hide()
         requestRunTimePermission()
-        handler = Handler(Looper.getMainLooper())
-        handler.postDelayed({
-            startActivity(Intent(applicationContext,MainActivity::class.java))
-            finish()
-        },3000)
+        if (Player.musicService != null){
+            handler = Handler(Looper.getMainLooper())
+            handler.postDelayed({
+                startActivity(Intent(applicationContext,MainActivity::class.java))
+                finish()
+            },0)
+        } else{
+            handler = Handler(Looper.getMainLooper())
+            handler.postDelayed({
+                startActivity(Intent(applicationContext,MainActivity::class.java))
+                finish()
+            },3000)
+        }
+
     }
     private fun requestRunTimePermission() {
         if (ActivityCompat.checkSelfPermission(applicationContext,

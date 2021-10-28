@@ -1,7 +1,7 @@
 package com.example.music_player.api
 
-import com.example.music_player.JsonSearch.MusicSearch
-import com.example.music_player.json.Root
+import com.example.music_player.model.JsonSearch.MusicSearch
+import com.example.music_player.model.json.Root
 import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory

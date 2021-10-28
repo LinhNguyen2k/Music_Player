@@ -6,27 +6,25 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.music_player.JsonSearch.MusicSearch
 import com.example.music_player.adapter.MusicAdapter
 import com.example.music_player.adapter.MusicSearchAdapter
-import com.example.music_player.api.ApiService
-import com.example.music_player.json.Root
-import com.example.music_player.json.Song
+import com.example.music_player.model.json.Song
+import com.example.music_player.viewmodel.ViewModelTopSong
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import kotlinx.android.synthetic.main.activity_main.*
-import retrofit2.Call
-import retrofit2.Response
 
 class MainActivity : AppCompatActivity() {
     private lateinit var musicAdapter: MusicAdapter
     private lateinit var musicSearchAdapter: MusicSearchAdapter
-
+    private lateinit var model : ViewModelTopSong
     var tv_search = ""
     companion object{
           var MusicList  = ArrayList<Song>()
-          var listSearch = ArrayList<com.example.music_player.JsonSearch.Song>()
+          var listSearch = ArrayList<com.example.music_player.model.JsonSearch.Song>()
     }
 
 
@@ -64,58 +62,40 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun searchSong(){
+        model = ViewModelProvider(this)[ViewModelTopSong::class.java]
         if (tv_search == "") {
             progressBar.visibility = View.GONE
             rc_list_songs_search.visibility = View.GONE
             rc_list_songs.visibility = View.VISIBLE
         } else {
-            ApiService.apiSearch.callAPISearch("song","500",tv_search).enqueue(object :
-                retrofit2.Callback<MusicSearch> {
-                override fun onResponse(call: Call<MusicSearch>, response: Response<MusicSearch>) {
-                    val responseBody = response.body()!!
-                    layout_notification.visibility = View.GONE
-                    progressBar.visibility = View.GONE
-                    rc_list_songs_search.visibility = View.VISIBLE
-                    rc_list_songs.visibility = View.GONE
-                    listSearch.clear()
-                    if(responseBody.data.isNotEmpty()) {
-                        listSearch.addAll(responseBody.data[0].song)
-
-                    }
-                    rc_list_songs_search.setHasFixedSize(true)
-                    rc_list_songs_search.layoutManager = LinearLayoutManager(this@MainActivity)
-                    musicSearchAdapter = MusicSearchAdapter(listSearch,this@MainActivity)
-                    rc_list_songs_search.adapter = musicSearchAdapter
-                    musicSearchAdapter.notifyDataSetChanged()
-
-                }
-
-                override fun onFailure(call: Call<MusicSearch>, t: Throwable) {
-                    layout_internet.visibility = View.VISIBLE
-                }
-
-
+            model.setLayoutSearchSong(tv_search)
+            model.getAllSearchSong().observe(this, Observer {
+                layout_notification.visibility = View.GONE
+                progressBar.visibility = View.GONE
+                rc_list_songs_search.visibility = View.VISIBLE
+                rc_list_songs.visibility = View.GONE
+                listSearch.clear()
+                listSearch.addAll(it)
+                rc_list_songs_search.setHasFixedSize(true)
+                rc_list_songs_search.layoutManager = LinearLayoutManager(this@MainActivity)
+                musicSearchAdapter = MusicSearchAdapter(listSearch,this@MainActivity)
+                rc_list_songs_search.adapter = musicSearchAdapter
             })
         }
     }
     private fun initViews() {
+        model = ViewModelProvider(this)[ViewModelTopSong::class.java]
 
-        ApiService.apiService.callAPI(0,0,0,"song",false).enqueue(object :
-            retrofit2.Callback<Root> {
-            override fun onResponse(call: Call<Root>, response: Response<Root>) {
-                val root =response.body()!!
-                layout_notification.visibility = View.GONE
-                progressBar.visibility = View.GONE
-                layout_internet.visibility = View.GONE
-                MusicList.addAll(root.data.song)
-                rc_list_songs.setHasFixedSize(true)
-                rc_list_songs.layoutManager = LinearLayoutManager(this@MainActivity)
-                musicAdapter = MusicAdapter(MusicList,this@MainActivity)
-                rc_list_songs.adapter = musicAdapter
-            }
-            override fun onFailure(call: Call<Root>, t: Throwable) {
-                layout_internet.visibility = View.VISIBLE
-            }
+        model.getAllTopSong().observe(this, Observer {
+            MusicList.clear()
+            MusicList = it
+            layout_notification.visibility = View.GONE
+            progressBar.visibility = View.GONE
+            layout_internet.visibility = View.GONE
+            rc_list_songs.setHasFixedSize(true)
+            rc_list_songs.layoutManager = LinearLayoutManager(this@MainActivity)
+            musicAdapter = MusicAdapter(it,this@MainActivity)
+            rc_list_songs.adapter = musicAdapter
 
         })
     }

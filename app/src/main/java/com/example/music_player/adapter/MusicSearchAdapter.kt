@@ -13,14 +13,14 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.music_player.MainActivity
 import com.example.music_player.Player
 import com.example.music_player.R
-import com.example.music_player.json.Album
-import com.example.music_player.json.Artist
-import com.example.music_player.json.Song
-import com.example.music_player.json.formatDuration
+import com.example.music_player.model.json.Album
+import com.example.music_player.model.json.Artist
+import com.example.music_player.model.json.Song
+import com.example.music_player.model.json.formatDuration
 import com.squareup.picasso.Picasso
 
 class MusicSearchAdapter(
-    private var listMusic: ArrayList<com.example.music_player.JsonSearch.Song>,
+    private var listMusic: ArrayList<com.example.music_player.model.JsonSearch.Song>,
     private val context: Context,
 ) :
     RecyclerView.Adapter<MusicSearchAdapter.ViewHolder>() {
