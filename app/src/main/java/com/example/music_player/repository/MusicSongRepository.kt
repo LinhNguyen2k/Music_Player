@@ -64,7 +64,7 @@ class MusicSongRepository {
         })
     }
     //lay info song
-    fun getListTopSong(id : String, type : String ,onResult: (isSuccess: Boolean, response: MusicInfo?) -> Unit) {
+    fun getListInfoSong(id : String, type : String ,onResult: (isSuccess: Boolean, response: MusicInfo?) -> Unit) {
         ApiMusicInfo.apiMusicInfo.callAPI(type,
             id)
             .enqueue(object : retrofit2.Callback<MusicInfo> {

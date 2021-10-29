@@ -19,7 +19,7 @@ class ViewModelTopSong (application: Application) : AndroidViewModel(application
     fun getAllTopSong() : MutableLiveData<ArrayList<Song>> = listMusicOnline
     fun getAllSearchSong() : MutableLiveData<ArrayList<com.example.music_player.model.JsonSearch.Song>> = listMusicSearch
 
-    fun setLayoutTopSong(){
+    private fun setLayoutTopSong(){
         MusicSongRepository.getInstance().getListTopSong { isSuccess, response ->
             if (isSuccess) {
                 listMusicOnline.postValue(response!!.data.song as ArrayList<Song>?)

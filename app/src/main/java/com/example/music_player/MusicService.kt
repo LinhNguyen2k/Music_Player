@@ -12,17 +12,14 @@ import android.os.IBinder
 import android.os.Looper
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.core.app.NotificationCompat
-import com.example.music_player.model.JsonInfo.MusicInfo
-import com.example.music_player.api.ApiMusicInfo
 import com.example.music_player.model.formatDurations
 import com.example.music_player.model.getImage
+import com.example.music_player.viewmodel.ViewModelInfoSong
 import kotlinx.android.synthetic.main.activity_player.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import retrofit2.Call
-import retrofit2.Response
 import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
@@ -33,6 +30,7 @@ class MusicService : Service() {
     var mediaPlayer: MediaPlayer? = null
     private lateinit var mediaSession: MediaSessionCompat
     private lateinit var runnable: Runnable
+    private lateinit var modelInfoSong : ViewModelInfoSong
     override fun onBind(intent: Intent?): IBinder? {
         mediaSession = MediaSessionCompat(baseContext, "My Music")
         return myBinder
@@ -149,33 +147,15 @@ class MusicService : Service() {
 
     }
 
-    fun setLayoutTopList() {
-        if (Player.isChekOnline && Player.musicListPlayer[Player.songPosition].isCheck) {
-            ApiMusicInfo.apiMusicInfo.callAPI(Player.musicListPlayer[Player.songPosition].type,
-                Player.musicListPlayer[Player.songPosition].id)
-                .enqueue(object : retrofit2.Callback<MusicInfo> {
-                    override fun onResponse(call: Call<MusicInfo>, response: Response<MusicInfo>) {
-                        var root = response.body()!!
-                        when {
-                            root.data.genres.isEmpty() -> {
-                                Player.binding.tvTypeSong.text = ""
-                            }
-                            root.data.genres.size == 1 -> {
-                                Player.binding.tvTypeSong.text = root.data.genres[0].name
-                            }
-                            else -> {
-                                Player.binding.tvTypeSong.text =
-                                    root.data.genres[1].name
-                            }
-                        }
-                    }
-
-                    override fun onFailure(call: Call<MusicInfo>, t: Throwable) {
-                    }
-                })
-        }
-
-    }
+//    fun setLayoutTopList() {
+//        if (Player.isChekOnline) {
+//            modelInfoSong.getInfoSong(Player.musicListPlayer[Player.songPosition].id, Player.musicListPlayer[Player.songPosition].type)
+//            modelInfoSong.listInfo().observe( this, Observer {
+//                Player.binding.tvTypeSong.text = it
+//            })
+//        }
+//
+//    }
 
     fun createMusicPlayer() {
         try {
@@ -210,5 +190,7 @@ class MusicService : Service() {
         }
         Handler(Looper.getMainLooper()).postDelayed(runnable, 0)
     }
+
+
 
 }

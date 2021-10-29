@@ -10,7 +10,6 @@ import com.example.music_player.model.getImage
 import com.example.music_player.model.setSongPosition
 import kotlin.system.exitProcess
 class NotificationReceiver : BroadcastReceiver() {
-
     override fun onReceive(p0: Context?, p1: Intent?) {
 
         when (p1?.action){
@@ -47,7 +46,7 @@ class NotificationReceiver : BroadcastReceiver() {
     private fun prevNextSong(increment : Boolean, context: Context){
         setSongPosition( check= increment)
         Player.musicService!!.createMusicPlayer()
-        Player.musicService!!.setLayoutTopList()
+//        Player.musicService!!.setLayoutTopList()
         if (Player.isChekOnline && Player.musicListPlayer[Player.songPosition].isCheck ){
             val linkImg  = Player.musicListPlayer[Player.songPosition].thumbnail.removeRange(34,48)
             Glide.with(context)

@@ -18,26 +18,26 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
-import com.example.music_player.api.ApiMusicInfo
 import com.example.music_player.databinding.ActivityPlayerBinding
-import com.example.music_player.model.JsonInfo.MusicInfo
 import com.example.music_player.model.Music
 import com.example.music_player.model.formatDurations
 import com.example.music_player.model.getImage
 import com.example.music_player.model.json.*
 import com.example.music_player.model.setSongPosition
+import com.example.music_player.viewmodel.ViewModelInfoSong
 import com.google.gson.GsonBuilder
 import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_player.*
-import retrofit2.Call
-import retrofit2.Response
 import java.lang.reflect.Method
 
 class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionListener {
 
+    private lateinit var modelInfoSong : ViewModelInfoSong
     companion object {
         var musicListPlayer = ArrayList<Song>()
         var musicListSearch = ArrayList<Song>()
@@ -504,34 +504,16 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         }
     }
 
-    private fun setLayoutTopList() {
+     fun setLayoutTopList() {
         if (isChekOnline) {
-            ApiMusicInfo.apiMusicInfo.callAPI(musicListPlayer[songPosition].type,
-                musicListPlayer[songPosition].id)
-                .enqueue(object : retrofit2.Callback<MusicInfo> {
-                    override fun onResponse(call: Call<MusicInfo>, response: Response<MusicInfo>) {
-                        var root = response.body()!!
-                        when {
-                            root.data.genres.isEmpty() -> {
-                                tv_typeSong.text = ""
-                            }
-                            root.data.genres.size == 1 -> {
-                                tv_typeSong.text = root.data.genres[0].name
-                            }
-                            else -> {
-                                tv_typeSong.text =
-                                    root.data.genres[1].name
-                            }
-                        }
-                    }
-
-                    override fun onFailure(call: Call<MusicInfo>, t: Throwable) {
-                    }
+            modelInfoSong = ViewModelProvider(this)[ViewModelInfoSong::class.java]
+            modelInfoSong.getInfoSong(musicListPlayer[songPosition].id, musicListPlayer[songPosition].type)
+            modelInfoSong.listInfo().observe(this, Observer {
+                        tv_typeSong.text = it
                 })
         }
 
     }
-
     override fun onServiceConnected(p0: ComponentName?, p1: IBinder?) {
         val binder = p1 as MusicService.MyBinder
         musicService = binder.currentService()

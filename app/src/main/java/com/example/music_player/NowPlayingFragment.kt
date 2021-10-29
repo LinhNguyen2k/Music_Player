@@ -18,6 +18,7 @@ import com.example.music_player.model.setSongPosition
 class NowPlayingFragment : Fragment() {
     companion object {
         lateinit var binding: FragmentNowPlayingBinding
+        var player: Player? = null
     }
 
     override fun onCreateView(
@@ -40,7 +41,7 @@ class NowPlayingFragment : Fragment() {
             Player.musicService!!.createMusicPlayer()
 
             if (Player.musicListPlayer[Player.songPosition].isCheck ) {
-                Player.musicService!!.setLayoutTopList()
+//                player!!.setLayoutTopList()
                 Glide.with(this)
                     .load(Player.musicListPlayer[Player.songPosition].thumbnail)
                     .apply(RequestOptions().placeholder(R.mipmap.music_player).centerCrop())
@@ -68,7 +69,7 @@ class NowPlayingFragment : Fragment() {
                 Intent(requireContext(), Player::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 intent.putExtra("index", Player.songPosition)
                 intent.putExtra("class", "NowPlaying")
-                Player.musicService!!.setLayoutTopList()
+//            player!!.setLayoutTopList()
                 ContextCompat.startActivity(requireContext(), intent, null)
         }
 
@@ -82,7 +83,7 @@ class NowPlayingFragment : Fragment() {
             binding.root.visibility = View.VISIBLE
             binding.tvSongNameFragment.isSelected = true
             if (Player.isChekOnline && Player.musicListPlayer[Player.songPosition].isCheck) {
-                Player.musicService!!.setLayoutTopList()
+//                player!!.setLayoutTopList()
                 Glide.with(this)
                     .load(Player.musicListPlayer[Player.songPosition].thumbnail)
                     .apply(RequestOptions().placeholder(R.mipmap.music_player).centerCrop())
