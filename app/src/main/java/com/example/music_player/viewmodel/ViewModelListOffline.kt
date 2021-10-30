@@ -15,7 +15,7 @@ class ViewModelListOffline(application: Application) : AndroidViewModel(applicat
     }
         fun getAllSongOffline() : MutableLiveData<ArrayList<Music>> = listMusicOffline
 
-    fun setValues(){
+    private fun setValues(){
         listMusicOffline.postValue(MusicSongRepository.getInstance().getAllAudio(context))
     }
 }

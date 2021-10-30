@@ -10,8 +10,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.music_player.Player
 import com.example.music_player.R
+import com.example.music_player.activity.Player
 import com.example.music_player.model.json.Song
 import com.example.music_player.model.json.formatDuration
 import com.squareup.picasso.Picasso

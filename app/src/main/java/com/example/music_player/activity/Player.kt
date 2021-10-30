@@ -1,6 +1,7 @@
-package com.example.music_player
+package com.example.music_player.activity
 
 import android.app.DownloadManager
+import android.app.Service
 import android.content.*
 import android.graphics.BitmapFactory
 import android.media.MediaPlayer
@@ -22,15 +23,17 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.music_player.R
 import com.example.music_player.databinding.ActivityPlayerBinding
+import com.example.music_player.fragment.NowPlayingFragment
 import com.example.music_player.model.Music
 import com.example.music_player.model.formatDurations
 import com.example.music_player.model.getImage
 import com.example.music_player.model.json.*
 import com.example.music_player.model.setSongPosition
+import com.example.music_player.service.MusicService
 import com.example.music_player.viewmodel.ViewModelInfoSong
 import com.google.gson.GsonBuilder
-import com.google.gson.reflect.TypeToken
 import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_player.*
 import java.lang.reflect.Method
@@ -72,7 +75,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             else playMusic()
         }
         img_back.setOnClickListener {
-            startActivity(Intent(applicationContext,MainActivity::class.java))
+//            startActivity(Intent(applicationContext, MainActivity::class.java))
             finish()
         }
         btn_nextLeft.setOnClickListener {
@@ -87,12 +90,20 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                     "Xin bạn kiểm tra lại kết nối mạng",
                     Toast.LENGTH_LONG).show()
                 return@setOnClickListener
-            } else {
+            } else if (isChekOnline){
                 val intent = Intent(applicationContext,
                     PlayList::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
                 intent.putExtra("idSongs", musicListPlayer[songPosition].id)
                 intent.putExtra("typeSongs", musicListPlayer[songPosition].type)
                 ContextCompat.startActivity(applicationContext, intent, null)
+                finish()
+            }else {
+                val intent = Intent(applicationContext,
+                    PlayList::class.java).addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+                intent.putExtra("idSongs", OfflineActivity.MusicList[songPosition].id)
+                intent.putExtra("typeSongs", "audio")
+                ContextCompat.startActivity(applicationContext, intent, null)
+                finish()
             }
 
         }
@@ -236,17 +247,21 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                             isFavorite = false
                             if (isChekOnline) {
                                 FavoriteActivity.favoriteList.removeAt(favoriteIndex)
+                                FavoriteActivity.musicAdapter.notifyDataSetChanged()
                                 Toast.makeText(applicationContext,
                                     "Đã xóa bài hát khỏi thư viện",
                                     Toast.LENGTH_LONG).show()
-                                updateLayouFavourite()
                             } else {
                                 FavoriteActivity.favoriteList.removeAt(favoriteIndexOffline)
+                                FavoriteActivity.musicAdapter.notifyDataSetChanged()
                                 Toast.makeText(applicationContext,
                                     "Đã xóa bài hát khỏi thư viện",
                                     Toast.LENGTH_LONG).show()
-                                updateLayouFavourite()
                             }
+                            val editor = getSharedPreferences("FAVORITE", Service.MODE_PRIVATE).edit()
+                            val jsonString = GsonBuilder().create().toJson(FavoriteActivity.favoriteList)
+                            editor.putString("FavoriteSongs",jsonString)
+                            editor.apply()
                         } else {
 
                             if (isChekOnline) {
@@ -295,6 +310,10 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                                     "Đã thêm bài hát vào thư viện",
                                     Toast.LENGTH_LONG).show()
                             }
+                            val editor = getSharedPreferences("FAVORITE", Service.MODE_PRIVATE).edit()
+                            val jsonString = GsonBuilder().create().toJson(FavoriteActivity.favoriteList)
+                            editor.putString("FavoriteSongs",jsonString)
+                            editor.apply()
 
                         }
 
@@ -318,14 +337,12 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
                                 val downloadManager =
                                     getSystemService(Context.DOWNLOAD_SERVICE) as DownloadManager
                                 idDownload = downloadManager.enqueue(request)
-                                isDownload = true
                             } else {
                                 Toast.makeText(applicationContext,
                                     "Bài hát đã có trong máy",
                                     Toast.LENGTH_SHORT).show()
                             }
                         } else {
-                            isDownload = true
                             Toast.makeText(applicationContext,
                                 "Bài hát đã có trong máy",
                                 Toast.LENGTH_SHORT).show()
@@ -475,14 +492,14 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
 
     private fun playMusic() {
         playerPause.setImageResource(R.drawable.ic_baseline_pause_24)
-        musicService!!.showNotification(R.drawable.ic_baseline_pause_24)
+        musicService!!.showNotification(R.drawable.ic_baseline_pause_24,1F)
         isPlaying = true
         musicService!!.mediaPlayer!!.start()
     }
 
     private fun pauseMusic() {
         playerPause.setImageResource(R.drawable.ic_baseline_play_arrow_24)
-        musicService!!.showNotification(R.drawable.ic_baseline_play_arrow_24)
+        musicService!!.showNotification(R.drawable.ic_baseline_play_arrow_24,0F)
         isPlaying = false
         musicService!!.mediaPlayer!!.pause()
     }
@@ -492,14 +509,14 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             setSongPosition(check = true)
             setLayout()
             createMusicPlayer()
-            musicService!!.showNotification(R.drawable.ic_baseline_pause_24)
+            musicService!!.showNotification(R.drawable.ic_baseline_pause_24,1F)
 
 
         } else {
             setSongPosition(check = false)
             setLayout()
             createMusicPlayer()
-            musicService!!.showNotification(R.drawable.ic_baseline_pause_24)
+            musicService!!.showNotification(R.drawable.ic_baseline_pause_24,1F)
 
         }
     }
@@ -518,8 +535,9 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         val binder = p1 as MusicService.MyBinder
         musicService = binder.currentService()
         createMusicPlayer()
+        setLayout()
         setLayoutTopList()
-        musicService!!.showNotification(R.drawable.ic_baseline_pause_24)
+        musicService!!.showNotification(R.drawable.ic_baseline_pause_24,1F)
         musicService!!.seekBarSetup()
     }
 
@@ -532,7 +550,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         setSongPosition(check = true)
         createMusicPlayer()
         if (isChekOnline) {
-            musicService!!.showNotification(R.drawable.ic_baseline_pause_24)
+            musicService!!.showNotification(R.drawable.ic_baseline_pause_24,0F)
             Glide.with(applicationContext)
                 .load(musicListPlayer[songPosition].thumbnail)
                 .apply(RequestOptions().placeholder(R.mipmap.music_player).centerCrop())
@@ -540,7 +558,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             NowPlayingFragment.binding.tvSongNameFragment.text = musicListPlayer[songPosition].title
             setLayout()
         } else {
-            musicService!!.showNotification(R.drawable.ic_baseline_pause_24)
+            musicService!!.showNotification(R.drawable.ic_baseline_pause_24,0F)
             val imageArt = getImage(musicListOffLine[songPosition].path)
             if (imageArt != null) {
                 BitmapFactory.decodeByteArray(imageArt, 0, imageArt.size)
@@ -557,18 +575,6 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         }
 
     }
-
-    fun updateLayouFavourite() {
-        FavoriteActivity.favoriteList = ArrayList()
-        val editor = getSharedPreferences("FAVORITE", MODE_PRIVATE)
-        val jsonString = editor.getString("FavoriteSongs", null)
-        val typeToken = object : TypeToken<ArrayList<Song>>() {}.type
-        if (jsonString != null) {
-            val data: ArrayList<Song> = GsonBuilder().create().fromJson(jsonString, typeToken)
-            FavoriteActivity.favoriteList.addAll(data)
-        }
-    }
-
     @RequiresApi(Build.VERSION_CODES.M)
     fun isOnline(context: Context): Boolean {
         val connectivityManager =
@@ -592,7 +598,7 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
         return false
     }
     override fun onBackPressed() {
-        startActivity(Intent(applicationContext,MainActivity::class.java))
+        startActivity(Intent(applicationContext, MainActivity::class.java))
         finish()
     }
 }

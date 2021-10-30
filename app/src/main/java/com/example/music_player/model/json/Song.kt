@@ -1,9 +1,9 @@
 package com.example.music_player.model.json
 
 import android.text.format.DateUtils
-import com.example.music_player.FavoriteActivity
-import com.example.music_player.OfflineActivity
-import com.example.music_player.Player
+import com.example.music_player.activity.FavoriteActivity
+import com.example.music_player.activity.OfflineActivity
+import com.example.music_player.activity.Player
 
 data class Song(
     val album: Album,
@@ -69,12 +69,14 @@ fun favoriteCheckOffline(name: String): Int {
         }
     return -1
 }
-fun downloadCheck(id: String): Int {
+fun downloadCheck(name: String): Int {
     Player.isDownload = false
-    OfflineActivity.MusicList.forEachIndexed { index, music ->
-        if (id == music.id) {
-            Player.isDownload = true
-            return index
+    if(Player.isChekOnline){
+        for (i in 0 until OfflineActivity.MusicList.size){
+            if (OfflineActivity.MusicList[i].artist == name ){
+                Player.isDownload = true
+                return  i
+            }
         }
     }
     return -1

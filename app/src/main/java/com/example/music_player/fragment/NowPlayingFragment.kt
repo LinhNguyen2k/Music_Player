@@ -1,4 +1,4 @@
-package com.example.music_player
+package com.example.music_player.fragment
 
 import android.content.Intent
 import android.graphics.BitmapFactory
@@ -10,6 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.music_player.R
+import com.example.music_player.activity.Player
 import com.example.music_player.databinding.FragmentNowPlayingBinding
 import com.example.music_player.model.getImage
 import com.example.music_player.model.setSongPosition
@@ -61,7 +63,7 @@ class NowPlayingFragment : Fragment() {
                         imageArt!!.size))
             }
 
-            Player.musicService!!.showNotification(R.drawable.ic_baseline_pause_24)
+            Player.musicService!!.showNotification(R.drawable.ic_baseline_pause_24,1F)
             playMusic()
         }
         binding.root.setOnClickListener {
@@ -121,7 +123,7 @@ class NowPlayingFragment : Fragment() {
     private fun playMusic() {
         Player.musicService!!.mediaPlayer!!.start()
         binding.btnPlayPause.setImageResource(R.drawable.ic_baseline_pause_24)
-        Player.musicService!!.showNotification(R.drawable.ic_baseline_pause_24)
+        Player.musicService!!.showNotification(R.drawable.ic_baseline_pause_24,1F)
         Player.binding.btnNextRight.setImageResource(R.drawable.ic_baseline_pause_24)
         Player.isPlaying = true
     }
@@ -129,7 +131,7 @@ class NowPlayingFragment : Fragment() {
     private fun pauseMusic() {
         Player.musicService!!.mediaPlayer!!.pause()
         binding.btnPlayPause.setImageResource(R.drawable.ic_baseline_play_arrow_24)
-        Player.musicService!!.showNotification(R.drawable.ic_baseline_play_arrow_24)
+        Player.musicService!!.showNotification(R.drawable.ic_baseline_play_arrow_24,0F)
         Player.binding.btnNextRight.setImageResource(R.drawable.ic_baseline_play_arrow_24)
         Player.isPlaying = false
     }

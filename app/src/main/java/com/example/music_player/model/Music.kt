@@ -1,8 +1,8 @@
 package com.example.music_player.model
 
 import android.media.MediaMetadataRetriever
-import com.example.music_player.OfflineActivity
-import com.example.music_player.Player
+import com.example.music_player.activity.OfflineActivity
+import com.example.music_player.activity.Player
 import java.util.concurrent.TimeUnit
 
 data class Music(

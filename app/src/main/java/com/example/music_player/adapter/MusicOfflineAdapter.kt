@@ -11,8 +11,8 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.music_player.Player
 import com.example.music_player.R
+import com.example.music_player.activity.Player
 import com.example.music_player.model.Music
 import com.example.music_player.model.formatDurations
 import com.example.music_player.model.getImage
@@ -50,11 +50,13 @@ class MusicOfflineAdapter(private var listMusic : ArrayList<Music>, private val 
         }
 
         holder.itemView.setOnClickListener {
+
             val intent  = Intent(context, Player::class.java).addFlags(FLAG_ACTIVITY_NEW_TASK)
             Player.isChekOnline = false
             intent.putExtra("index", position)
             intent.putExtra("class", "MusicOfflineAdapter")
             ContextCompat.startActivity(context, intent, null)
+
         }
 
     }

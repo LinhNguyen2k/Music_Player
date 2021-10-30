@@ -10,9 +10,9 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.music_player.MainActivity
-import com.example.music_player.Player
 import com.example.music_player.R
+import com.example.music_player.activity.MainActivity
+import com.example.music_player.activity.Player
 import com.example.music_player.model.json.Album
 import com.example.music_player.model.json.Artist
 import com.example.music_player.model.json.Song
@@ -56,7 +56,7 @@ class MusicSearchAdapter(
         holder.itemView.setOnClickListener {
             val intent = Intent(context, Player::class.java).addFlags(FLAG_ACTIVITY_NEW_TASK)
             Player.isChekOnline = true
-
+            Player.musicListSearch.clear()
             for (i in 0 until MainActivity.listSearch.size - 1) {
                 var name = MainActivity.listSearch[i].artist
                 var id = MainActivity.listSearch[i].id
@@ -73,6 +73,7 @@ class MusicSearchAdapter(
             intent.putExtra("index", position)
             intent.putExtra("class", "MusicSearchAdapter")
             ContextCompat.startActivity(context, intent, null)
+
         }
 
     }

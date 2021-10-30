@@ -1,11 +1,11 @@
-package com.example.music_player
+package com.example.music_player.activity
 
-import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.music_player.R
 import com.example.music_player.adapter.MusicListAdapter
 import com.example.music_player.model.json.Song
 import com.example.music_player.viewmodel.ViewModelPlayList
@@ -25,7 +25,7 @@ class PlayList : AppCompatActivity() {
         supportActionBar?.hide()
         initViews()
         img_back.setOnClickListener {
-            startActivity(Intent(applicationContext, MainActivity::class.java))
+//            startActivity(Intent(applicationContext, MainActivity::class.java))
             finish()
         }
     }
@@ -47,7 +47,7 @@ class PlayList : AppCompatActivity() {
     }
 
     override fun onBackPressed() {
-        startActivity(Intent(applicationContext, MainActivity::class.java))
+//        startActivity(Intent(applicationContext, MainActivity::class.java))
         finish()
     }
 

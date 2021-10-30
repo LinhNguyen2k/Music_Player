@@ -1,4 +1,4 @@
-package com.example.music_player
+package com.example.music_player.activity
 
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -7,6 +7,7 @@ import android.os.Handler
 import android.os.Looper
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
+import com.example.music_player.R
 
 class Splash : AppCompatActivity() {
     lateinit var handler: Handler
@@ -18,13 +19,13 @@ class Splash : AppCompatActivity() {
         if (Player.musicService != null){
             handler = Handler(Looper.getMainLooper())
             handler.postDelayed({
-                startActivity(Intent(applicationContext,MainActivity::class.java))
+                startActivity(Intent(applicationContext, MainActivity::class.java))
                 finish()
             },0)
         } else{
             handler = Handler(Looper.getMainLooper())
             handler.postDelayed({
-                startActivity(Intent(applicationContext,MainActivity::class.java))
+                startActivity(Intent(applicationContext, MainActivity::class.java))
                 finish()
             },3000)
         }

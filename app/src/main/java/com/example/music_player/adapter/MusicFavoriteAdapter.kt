@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.os.Build
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -17,11 +16,11 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.example.music_player.FavoriteActivity
-import com.example.music_player.OfflineActivity
-import com.example.music_player.Player
-import com.example.music_player.Player.Companion.listAddSongOffline
 import com.example.music_player.R
+import com.example.music_player.activity.FavoriteActivity
+import com.example.music_player.activity.OfflineActivity
+import com.example.music_player.activity.Player
+import com.example.music_player.activity.Player.Companion.listAddSongOffline
 import com.example.music_player.model.Music
 import com.example.music_player.model.formatDurations
 import com.example.music_player.model.getImage
@@ -89,8 +88,6 @@ class MusicFavoriteAdapter(private var listMusic: ArrayList<Song>, private val c
                     Player.isChekOnline = true
                     val intent =
                         Intent(context, Player::class.java).addFlags(FLAG_ACTIVITY_NEW_TASK)
-//                    intent.putExtra("idSongs", listMusic[position].id)
-//                    intent.putExtra("typeSongs", listMusic[position].type)
                     intent.putExtra("index", position)
                     intent.putExtra("class", "MusicFavoriteAdapter")
                     Player.listPhu.clear()
@@ -98,7 +95,6 @@ class MusicFavoriteAdapter(private var listMusic: ArrayList<Song>, private val c
                         if (listMusic[i].isCheck) {
                             Player.listPhu.add(listMusic[i])
                         }
-                        Log.d("test","$i")
                     }
                     ContextCompat.startActivity(context, intent, null)
                 }
@@ -129,7 +125,7 @@ class MusicFavoriteAdapter(private var listMusic: ArrayList<Song>, private val c
 
                 }
                 OfflineActivity.MusicList.clear()
-                for (i in 0 until FavoriteActivity.favoriteList.size - 1  ) {
+                for (i in 0 until FavoriteActivity.favoriteList.size ) {
                     for (j in 0 until listAddSongOffline.size){
                         val name = listAddSongOffline[j].artist
                         val title = listAddSongOffline[j].title
@@ -160,19 +156,6 @@ class MusicFavoriteAdapter(private var listMusic: ArrayList<Song>, private val c
                         }
                     }
                 }
-
-//                while (OfflineActivity.MusicList.size <= FavoriteActivity.favoriteList.size){
-//                    OfflineActivity.MusicList.add(Music(id,
-//                        title,
-//                        "",
-//                        name,
-//                        duration,
-//                        path,
-//                        thumbnail,
-//                        false))
-//                }
-//                intent.putExtra("idSongs", listMusic[position].id)
-//                intent.putExtra("typeSongs", listMusic[position].type)
                 intent.putExtra("index", position)
                 intent.putExtra("class", "MusicFavoriteAdapter")
                 ContextCompat.startActivity(context, intent, null)

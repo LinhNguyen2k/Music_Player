@@ -1,14 +1,22 @@
-package com.example.music_player
+package com.example.music_player.service
 
+import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
+import com.example.music_player.ApplicationClass
+import com.example.music_player.R
+import com.example.music_player.activity.FavoriteActivity
+import com.example.music_player.activity.Player
+import com.example.music_player.fragment.NowPlayingFragment
 import com.example.music_player.model.getImage
 import com.example.music_player.model.setSongPosition
+import com.google.gson.GsonBuilder
 import kotlin.system.exitProcess
+
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(p0: Context?, p1: Intent?) {
 
@@ -20,6 +28,7 @@ class NotificationReceiver : BroadcastReceiver() {
             }
             ApplicationClass.NEXT -> prevNextSong(increment = true, context = p0!!)
             ApplicationClass.EXIT -> {
+
                 Player.musicService!!.stopForeground(true)
                 Player.musicService = null
                 exitProcess(1)
@@ -30,7 +39,7 @@ class NotificationReceiver : BroadcastReceiver() {
     private fun playMusic(){
         Player.isPlaying = true
         Player.musicService!!.mediaPlayer!!.start()
-        Player.musicService!!.showNotification(R.drawable.ic_baseline_pause_24)
+        Player.musicService!!.showNotification(R.drawable.ic_baseline_pause_24,1F)
         Player.binding.playerPause.setImageResource(R.drawable.ic_baseline_pause_24)
         NowPlayingFragment.binding.btnPlayPause.setImageResource(R.drawable.ic_baseline_pause_24)
 
@@ -38,7 +47,7 @@ class NotificationReceiver : BroadcastReceiver() {
     private fun pauseMusic(){
         Player.isPlaying = false
         Player.musicService!!.mediaPlayer!!.pause()
-        Player.musicService!!.showNotification(R.drawable.ic_baseline_play_arrow_24)
+        Player.musicService!!.showNotification(R.drawable.ic_baseline_play_arrow_24,0F)
         Player.binding.playerPause.setImageResource(R.drawable.ic_baseline_play_arrow_24)
         NowPlayingFragment.binding.btnPlayPause.setImageResource(R.drawable.ic_baseline_play_arrow_24)
 

@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.net.Uri
 import android.provider.MediaStore
+import androidx.appcompat.app.AppCompatActivity
 import com.example.music_player.api.ApiMusicInfo
 import com.example.music_player.api.ApiMusicPlayList
 import com.example.music_player.api.ApiService
@@ -12,6 +13,9 @@ import com.example.music_player.model.JsonPlayList.MusicPlayList
 import com.example.music_player.model.JsonSearch.MusicSearch
 import com.example.music_player.model.Music
 import com.example.music_player.model.json.Root
+import com.example.music_player.model.json.Song
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
 import retrofit2.Call
 import retrofit2.Response
 import java.io.File
@@ -24,10 +28,15 @@ class MusicSongRepository {
                 INSTANCE = it
             }
     }
+
     //lay list nhac lien quan
-         fun getListRecommendSong(typeSongs : String,idSongs : String, onResult: (isSuccess: Boolean, response: MusicPlayList?) -> Unit) {
+    fun getListRecommendSong(
+        typeSongs: String,
+        idSongs: String,
+        onResult: (isSuccess: Boolean, response: MusicPlayList?) -> Unit,
+    ) {
         //http://mp3.zing.vn/xhr/recommend?type=audio&id=ZW67OIA0
-        ApiMusicPlayList.apiMusicPlayList.callAPI(typeSongs,idSongs).enqueue(object :
+        ApiMusicPlayList.apiMusicPlayList.callAPI(typeSongs, idSongs).enqueue(object :
             retrofit2.Callback<MusicPlayList> {
             override fun onResponse(call: Call<MusicPlayList>, response: Response<MusicPlayList>) {
                 if (response.isSuccessful && response != null) {
@@ -45,9 +54,10 @@ class MusicSongRepository {
 
         })
     }
+
     //lay list nhac top 100
-    fun getListTopSong(onResult: (isSuccess: Boolean, response: Root?) -> Unit){
-        ApiService.apiService.callAPI(0,0,0,"song",false).enqueue(object :
+    fun getListTopSong(onResult: (isSuccess: Boolean, response: Root?) -> Unit) {
+        ApiService.apiService.callAPI(0, 0, 0, "song", false).enqueue(object :
             retrofit2.Callback<Root> {
             override fun onResponse(call: Call<Root>, response: Response<Root>) {
                 if (response.isSuccessful && response != null) {
@@ -57,14 +67,20 @@ class MusicSongRepository {
 
                 }
             }
+
             override fun onFailure(call: Call<Root>, t: Throwable) {
                 onResult(false, null)
             }
 
         })
     }
+
     //lay info song
-    fun getListInfoSong(id : String, type : String ,onResult: (isSuccess: Boolean, response: MusicInfo?) -> Unit) {
+    fun getListInfoSong(
+        id: String,
+        type: String,
+        onResult: (isSuccess: Boolean, response: MusicInfo?) -> Unit,
+    ) {
         ApiMusicInfo.apiMusicInfo.callAPI(type,
             id)
             .enqueue(object : retrofit2.Callback<MusicInfo> {
@@ -82,12 +98,13 @@ class MusicSongRepository {
                 }
             })
     }
+
     //list search
     fun getSongSearch(
         keyWord: String,
-        onResult: (isSuccess: Boolean, response: MusicSearch?) -> Unit
+        onResult: (isSuccess: Boolean, response: MusicSearch?) -> Unit,
     ) {
-        ApiService.apiSearch.callAPISearch("song","500",keyWord).enqueue(object :
+        ApiService.apiSearch.callAPISearch("song", "500", keyWord).enqueue(object :
             retrofit2.Callback<MusicSearch> {
             override fun onResponse(call: Call<MusicSearch>, response: Response<MusicSearch>) {
                 if (response.isSuccessful && response != null) {
@@ -106,9 +123,21 @@ class MusicSongRepository {
 
         })
     }
+    //lay list nhac yeu thich
+    fun getListFavouriteSongs(context: Context) : ArrayList<Song>{
+        val favoriteList = ArrayList<Song>()
+        val editor = context.getSharedPreferences("FAVORITE", AppCompatActivity.MODE_PRIVATE)
+        val jsonString = editor.getString("FavoriteSongs", null)
+        val typeToken = object : TypeToken<ArrayList<Song>>() {}.type
+        if (jsonString != null) {
+            val data: ArrayList<Song> = GsonBuilder().create().fromJson(jsonString, typeToken)
+            favoriteList.addAll(data)
+        }
+        return favoriteList
+    }
     //lay list nhac offline
     @SuppressLint("Range")
-     fun getAllAudio(context: Context): ArrayList<Music> {
+    fun getAllAudio(context: Context): ArrayList<Music> {
         val tempList = ArrayList<Music>()
         val selection = MediaStore.Audio.Media.IS_MUSIC + " != 0"
         val projection = arrayOf(MediaStore.Audio.Media._ID,
@@ -144,7 +173,8 @@ class MusicSongRepository {
                 val pathC =
                     cursor.getString((cursor.getColumnIndex(MediaStore.Audio.Media.DATA)))
 
-                val music = Music(id, title, album, artist, durationC, pathC, artUri = artUriC,false)
+                val music =
+                    Music(id, title, album, artist, durationC, pathC, artUri = artUriC, false)
                 val file = File(music.path)
                 if (file.exists()) {
                     tempList.add(music)
