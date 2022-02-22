@@ -1,6 +1,5 @@
 package com.example.music_player.service
 
-import android.app.Service
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
@@ -9,17 +8,14 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 import com.example.music_player.ApplicationClass
 import com.example.music_player.R
-import com.example.music_player.activity.FavoriteActivity
 import com.example.music_player.activity.Player
 import com.example.music_player.fragment.NowPlayingFragment
 import com.example.music_player.model.getImage
 import com.example.music_player.model.setSongPosition
-import com.google.gson.GsonBuilder
 import kotlin.system.exitProcess
 
 class NotificationReceiver : BroadcastReceiver() {
     override fun onReceive(p0: Context?, p1: Intent?) {
-
         when (p1?.action){
             ApplicationClass.PREVIOUS -> prevNextSong(increment = false, context = p0!!)
             ApplicationClass.PLAY -> {
@@ -28,7 +24,6 @@ class NotificationReceiver : BroadcastReceiver() {
             }
             ApplicationClass.NEXT -> prevNextSong(increment = true, context = p0!!)
             ApplicationClass.EXIT -> {
-
                 Player.musicService!!.stopForeground(true)
                 Player.musicService = null
                 exitProcess(1)
