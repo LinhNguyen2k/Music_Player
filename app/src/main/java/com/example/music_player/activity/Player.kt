@@ -13,6 +13,7 @@ import android.os.Bundle
 import android.os.Environment
 import android.os.IBinder
 import android.util.Log
+import android.view.animation.LinearInterpolator
 import android.widget.PopupMenu
 import android.widget.SeekBar
 import android.widget.Toast
@@ -38,7 +39,7 @@ import com.squareup.picasso.Picasso
 import kotlinx.android.synthetic.main.activity_player.*
 import java.lang.reflect.Method
 
-class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionListener {
+class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionListener, Runnable {
 
     private lateinit var modelInfoSong : ViewModelInfoSong
     companion object {
@@ -194,10 +195,12 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
             }
             tv_songName.text = musicListOffLine[songPosition].artist
             tv_titleSong.text = musicListOffLine[songPosition].title
+            startAnimation()
         }
 
         if (isChekOnline && musicListPlayer[songPosition].isCheck) {
             setLayoutTopList()
+            startAnimation()
             favoriteIndex = favoriteCheck(musicListPlayer[songPosition].id)
             downloadIndex = downloadCheck(musicListPlayer[songPosition].id)
             val linkImg = musicListPlayer[songPosition].thumbnail.removeRange(34, 48)
@@ -604,6 +607,17 @@ class Player : AppCompatActivity(), ServiceConnection, MediaPlayer.OnCompletionL
     override fun onBackPressed() {
         startActivity(Intent(applicationContext, MainActivity::class.java))
         finish()
+    }
+    private fun startAnimation() {
+        val r = Runnable {
+            img_songs.animate().rotationBy(360F).withEndAction(this).setDuration(10000).interpolator = LinearInterpolator()
+            img_songs.animate().start()
+        }
+        img_songs.animate().rotationBy(360F).withEndAction(r).setDuration(10000).interpolator = LinearInterpolator()
+        img_songs.animate().start()
+    }
+
+    override fun run() {
     }
 }
 
